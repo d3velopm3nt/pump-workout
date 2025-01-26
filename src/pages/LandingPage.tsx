@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { ThemeToggle } from '../components/common/ThemeToggle';
 import { FaFire } from 'react-icons/fa';
+import { GiTrophy, GiLevelThree, GiPodiumWinner } from 'react-icons/gi';
+import { FaUserFriends, FaDumbbell, FaChartLine } from 'react-icons/fa';
 
 const LandingPage = () => {
   return (
@@ -23,13 +25,28 @@ const LandingPage = () => {
         </nav>
       </header>
 
-      {/* Hero Section */}
+      {/* Hero Section - Updated with gamification elements */}
       <div className="hero min-h-screen relative">
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(16,185,129,0.1),transparent_50%),radial-gradient(circle_at_70%_50%,rgba(14,165,233,0.05),transparent_50%)]"></div>
         
         <div className="hero-content text-center z-10 max-w-4xl px-4">
           <div>
+            <div className="flex justify-center mb-4">
+              <div className="stats shadow bg-base-200/50 backdrop-blur-sm">
+                <div className="stat">
+                  <div className="stat-title">Active Users</div>
+                  <div className="stat-value text-primary">10K+</div>
+                  <div className="stat-desc">↗︎ 1400 (14%)</div>
+                </div>
+                <div className="stat">
+                  <div className="stat-title">Goals Achieved</div>
+                  <div className="stat-value text-secondary">85K</div>
+                  <div className="stat-desc">↗︎ 8500 this month</div>
+                </div>
+              </div>
+            </div>
+            
             <h1 className="text-6xl font-bold mb-8 leading-tight">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/80 to-secondary">
                 FitQuest: Level Up Your Fitness Journey
@@ -39,23 +56,50 @@ const LandingPage = () => {
               Transform your workout experience with our gamified fitness platform. Train smarter, compete with friends, and achieve your goals while having fun!
             </p>
             <div className="flex gap-4 justify-center">
-              <Link to="/signup" className="btn btn-primary btn-lg">
-                Start Your Journey
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
+              <Link to="/signup" className="btn btn-primary btn-lg gap-2">
+                Start Your Quest
+                <GiLevelThree className="h-5 w-5" />
               </Link>
               <Link to="/login" className="btn btn-outline btn-lg hover:btn-primary">
-                Login
+                Resume Journey
               </Link>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Features Section */}
+      {/* Updated Features Section */}
       <div className="py-20 px-4 bg-base-200">
-        <h2 className="text-4xl font-bold text-center mb-16">Why Choose FitQuest?</h2>
+        <h2 className="text-4xl font-bold text-center mb-4">Level Up Your Fitness</h2>
+        <div className="flex justify-center mb-16">
+          <div className="stats shadow">
+            <div className="stat place-items-center">
+              <div className="stat-figure text-primary">
+                <FaChartLine className="w-8 h-8" />
+              </div>
+              <div className="stat-title">XP Gained</div>
+              <div className="stat-value">31K</div>
+              <div className="stat-desc">From 1st quest onwards</div>
+            </div>
+            <div className="stat place-items-center">
+              <div className="stat-figure text-secondary">
+                <GiTrophy className="w-8 h-8" />
+              </div>
+              <div className="stat-title">Achievements</div>
+              <div className="stat-value text-secondary">4,200</div>
+              <div className="stat-desc">↗︎ 40 (2%)</div>
+            </div>
+            <div className="stat place-items-center">
+              <div className="stat-figure text-accent">
+                <FaUserFriends className="w-8 h-8" />
+              </div>
+              <div className="stat-title">Active Questers</div>
+              <div className="stat-value">1,200</div>
+              <div className="stat-desc">↗︎ 90 (14%)</div>
+            </div>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300">
             <div className="card-body">
@@ -101,28 +145,58 @@ const LandingPage = () => {
         </div>
       </div>
 
-      {/* Challenges Section */}
+      {/* Updated Challenges Section */}
       <div className="bg-base-300 py-16 px-4">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-12">Epic Fitness Challenges</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="card bg-base-100 shadow-xl">
+          <h2 className="text-4xl font-bold text-center mb-12">Epic Quests & Challenges</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300">
               <div className="card-body">
-                <h3 className="card-title">Daily Challenges</h3>
-                <p>Complete daily workout challenges to earn bonus experience and rewards.</p>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <FaDumbbell className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="card-title m-0">Daily Quests</h3>
+                </div>
+                <progress className="progress progress-primary" value="70" max="100"></progress>
+                <p>Complete daily challenges for bonus XP</p>
                 <div className="card-actions justify-end">
-                  <div className="badge badge-primary">XP Boost</div>
-                  <div className="badge badge-secondary">Rewards</div>
+                  <div className="badge badge-primary">+100 XP</div>
+                  <div className="badge badge-outline">4 Active</div>
                 </div>
               </div>
             </div>
-            <div className="card bg-base-100 shadow-xl">
+
+            <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300">
               <div className="card-body">
-                <h3 className="card-title">Monthly Championships</h3>
-                <p>Compete with others in monthly themed workout championships.</p>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center">
+                    <GiPodiumWinner className="h-6 w-6 text-secondary" />
+                  </div>
+                  <h3 className="card-title m-0">Weekly Raids</h3>
+                </div>
+                <progress className="progress progress-secondary" value="40" max="100"></progress>
+                <p>Team up for weekly challenge raids</p>
                 <div className="card-actions justify-end">
-                  <div className="badge badge-primary">Leaderboards</div>
-                  <div className="badge badge-secondary">Prizes</div>
+                  <div className="badge badge-secondary">+500 XP</div>
+                  <div className="badge badge-outline">2 Days Left</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300">
+              <div className="card-body">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+                    <GiTrophy className="h-6 w-6 text-accent" />
+                  </div>
+                  <h3 className="card-title m-0">Season Pass</h3>
+                </div>
+                <progress className="progress progress-accent" value="85" max="100"></progress>
+                <p>Unlock exclusive rewards and badges</p>
+                <div className="card-actions justify-end">
+                  <div className="badge badge-accent">Premium</div>
+                  <div className="badge badge-outline">Level 15</div>
                 </div>
               </div>
             </div>
@@ -160,13 +234,23 @@ const LandingPage = () => {
         </div>
       </div>
 
-      {/* CTA Section */}
+      {/* Updated CTA Section */}
       <div className="hero bg-base-200">
         <div className="hero-content text-center py-16">
           <div className="max-w-md">
-            <h2 className="text-4xl font-bold">Ready to Begin Your Journey?</h2>
-            <p className="py-6">Join thousands of users who are already transforming their fitness journey with FitQuest.</p>
-            <Link to="/signup" className="btn btn-primary">Start Now - It's Free!</Link>
+            <h2 className="text-4xl font-bold">Begin Your Epic Quest!</h2>
+            <div className="py-6">
+              <p className="mb-4">Join thousands of fitness adventurers already leveling up their lives.</p>
+              <div className="flex justify-center gap-2">
+                <div className="badge badge-primary">Level 1 Starter Pack</div>
+                <div className="badge badge-secondary">Bonus XP Weekend</div>
+                <div className="badge badge-accent">Newbie Rewards</div>
+              </div>
+            </div>
+            <Link to="/signup" className="btn btn-primary btn-lg gap-2">
+              Create Your Character
+              <GiLevelThree className="h-5 w-5" />
+            </Link>
           </div>
         </div>
       </div>
