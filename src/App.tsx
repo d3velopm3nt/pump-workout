@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ProtectedLayout } from './components/layout/ProtectedLayout';
 import { MuscleGroupNavigation } from './components/muscle-groups/MuscleGroupNavigation';
@@ -6,6 +6,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ExerciseList } from './components/muscle-groups/ExerciseList';
 import { ExerciseDetail } from './components/muscle-groups/ExerciseDetail';
 import LandingPage from './pages/LandingPage';
+import Login from './pages/Login';
+import SignUp from './pages/SignUp';
 
 const queryClient = new QueryClient();
 
@@ -19,6 +21,8 @@ function App() {
             <Routes>
               {/* Public routes */}
               <Route path="/landing" element={<LandingPage />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp />} />
               
               {/* Protected routes */}
               <Route element={<ProtectedLayout />}>
@@ -26,6 +30,9 @@ function App() {
                 <Route path="/muscles/:section/:group" element={<ExerciseList />} />
                 <Route path="/exercise/:id" element={<ExerciseDetail />} />
               </Route>
+
+              {/* Catch all route */}
+              <Route path="*" element={<Navigate to="/landing" replace />} />
             </Routes>
           </AuthProvider>
         </QueryClientProvider>

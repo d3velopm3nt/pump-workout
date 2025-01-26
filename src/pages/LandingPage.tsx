@@ -2,9 +2,9 @@ import { Link } from 'react-router-dom';
 
 const LandingPage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-base-300 to-base-100">
+    <div className="min-h-screen bg-base-100">
       {/* Navbar */}
-      <div className="navbar bg-base-100 bg-opacity-90 fixed top-0 z-50">
+      <div className="navbar bg-base-100/50 backdrop-blur-lg fixed top-0 z-50 border-b border-base-300">
         <div className="navbar-start">
           <div className="text-xl font-bold text-primary">FitQuest</div>
         </div>
@@ -15,18 +15,30 @@ const LandingPage = () => {
       </div>
 
       {/* Hero Section */}
-      <div className="hero min-h-screen">
-        <div className="hero-content text-center">
-          <div className="max-w-3xl">
-            <h1 className="text-5xl font-bold mb-8 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              FitQuest: Your Fitness Journey Begins Here
+      <div className="hero min-h-screen relative">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(16,185,129,0.1),transparent_50%),radial-gradient(circle_at_70%_50%,rgba(14,165,233,0.05),transparent_50%)]"></div>
+        
+        <div className="hero-content text-center z-10 max-w-4xl px-4">
+          <div>
+            <h1 className="text-6xl font-bold mb-8 leading-tight">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/80 to-secondary">
+                FitQuest: Level Up Your Fitness Journey
+              </span>
             </h1>
-            <p className="py-6 text-xl text-base-content/80">
+            <p className="py-8 text-xl text-base-content/80 max-w-2xl mx-auto">
               Transform your workout experience with our gamified fitness platform. Train smarter, compete with friends, and achieve your goals while having fun!
             </p>
             <div className="flex gap-4 justify-center">
-              <Link to="/signup" className="btn btn-primary btn-lg">Get Started</Link>
-              <Link to="/login" className="btn btn-ghost btn-lg">Login</Link>
+              <Link to="/signup" className="btn btn-primary btn-lg">
+                Start Your Journey
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </Link>
+              <Link to="/login" className="btn btn-outline btn-lg hover:btn-primary">
+                Login
+              </Link>
             </div>
           </div>
         </div>
