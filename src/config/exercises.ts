@@ -57,21 +57,246 @@ export const exerciseConfig: BodySection = {
       }
     ],
     "Back": [
-      // ... Back exercises (as provided in the JSON)
+      {
+        "name": "Latissimus Dorsi",
+        "common": "Lats",
+        "exercises": [
+          "Pull-ups",
+          "Lat Pulldown",
+          "Bent-over Rows",
+          "Single-arm Dumbbell Row"
+        ]
+      },
+      {
+        "name": "Trapezius",
+        "common": "Traps",
+        "exercises": [
+          "Shrugs",
+          "Face Pulls",
+          "Upright Rows",
+          "Deadlifts"
+        ]
+      },
+      {
+        "name": "Rhomboids",
+        "common": "Upper Back",
+        "exercises": [
+          "Face Pulls",
+          "Seated Cable Row",
+          "Reverse Fly",
+          "T-bar Row"
+        ]
+      },
+      {
+        "name": "Erector Spinae",
+        "common": "Lower Back",
+        "exercises": [
+          "Deadlifts",
+          "Back Extensions",
+          "Good Mornings",
+          "Superman Exercise"
+        ]
+      }
     ],
     "Shoulders": [
-      // ... Shoulder exercises (as provided in the JSON)
+      {
+        "name": "Deltoid (Anterior)",
+        "common": "Front Shoulder",
+        "exercises": [
+          "Front Raises",
+          "Overhead Press",
+          "Arnold Press",
+          "Push Press"
+        ]
+      },
+      {
+        "name": "Deltoid (Lateral)",
+        "common": "Side Shoulder",
+        "exercises": [
+          "Lateral Raises",
+          "Cable Lateral Raise",
+          "Arnold Press",
+          "Upright Rows"
+        ]
+      },
+      {
+        "name": "Deltoid (Posterior)",
+        "common": "Rear Shoulder",
+        "exercises": [
+          "Reverse Fly",
+          "Face Pulls",
+          "Bent-over Rear Delt Raise",
+          "Reverse Pec Deck Machine"
+        ]
+      },
+      {
+        "name": "Rotator Cuff",
+        "common": "Shoulder Stabilizers",
+        "exercises": [
+          "External Rotations",
+          "Internal Rotations",
+          "Face Pulls",
+          "Resistance Band Exercises"
+        ]
+      }
     ],
     "Arms": [
-      // ... Arm exercises (as provided in the JSON)
+      {
+        "name": "Biceps Brachii",
+        "common": "Biceps",
+        "exercises": [
+          "Barbell Curls",
+          "Dumbbell Curls",
+          "Hammer Curls",
+          "Preacher Curls"
+        ]
+      },
+      {
+        "name": "Triceps Brachii",
+        "common": "Triceps",
+        "exercises": [
+          "Triceps Dips",
+          "Overhead Triceps Extension",
+          "Triceps Pushdown",
+          "Close-grip Bench Press"
+        ]
+      },
+      {
+        "name": "Brachialis",
+        "common": "Inner Biceps",
+        "exercises": [
+          "Hammer Curls",
+          "Reverse Curls",
+          "Preacher Curls",
+          "Concentration Curls"
+        ]
+      },
+      {
+        "name": "Forearm Flexors",
+        "common": "Inner Forearm",
+        "exercises": [
+          "Wrist Curls",
+          "Reverse Wrist Curls",
+          "Farmer's Carry",
+          "Wrist Roller"
+        ]
+      },
+      {
+        "name": "Forearm Extensors",
+        "common": "Outer Forearm",
+        "exercises": [
+          "Reverse Wrist Curls",
+          "Reverse Barbell Curls",
+          "Zottman Curls",
+          "Finger Curls"
+        ]
+      }
     ]
   },
   "Lower": {
     "Legs": [
-      // ... Leg exercises (as provided in the JSON)
+      {
+        "name": "Quadriceps",
+        "common": "Quads",
+        "exercises": [
+          "Squats",
+          "Leg Press",
+          "Lunges",
+          "Leg Extensions"
+        ]
+      },
+      {
+        "name": "Hamstrings",
+        "common": "Hamstrings",
+        "exercises": [
+          "Deadlifts",
+          "Leg Curls",
+          "Romanian Deadlifts",
+          "Nordic Curls"
+        ]
+      },
+      {
+        "name": "Gluteus Maximus",
+        "common": "Glutes",
+        "exercises": [
+          "Hip Thrusts",
+          "Glute Bridges",
+          "Step-ups",
+          "Bulgarian Split Squats"
+        ]
+      },
+      {
+        "name": "Adductors",
+        "common": "Inner Thigh",
+        "exercises": [
+          "Sumo Deadlifts",
+          "Copenhagen Plank",
+          "Adductor Machine",
+          "Side Lunges"
+        ]
+      },
+      {
+        "name": "Abductors",
+        "common": "Outer Thigh",
+        "exercises": [
+          "Side Leg Raises",
+          "Banded Lateral Walks",
+          "Clamshells",
+          "Cable Hip Abduction"
+        ]
+      },
+      {
+        "name": "Calves (Gastrocnemius, Soleus)",
+        "common": "Calves",
+        "exercises": [
+          "Standing Calf Raises",
+          "Seated Calf Raises",
+          "Donkey Calf Raises",
+          "Jump Rope"
+        ]
+      }
     ],
     "Core": [
-      // ... Core exercises (as provided in the JSON)
+      {
+        "name": "Rectus Abdominis",
+        "common": "Abs",
+        "exercises": [
+          "Crunches",
+          "Leg Raises",
+          "Planks",
+          "Cable Crunches"
+        ]
+      },
+      {
+        "name": "Obliques",
+        "common": "Side Abs",
+        "exercises": [
+          "Russian Twists",
+          "Side Planks",
+          "Woodchoppers",
+          "Bicycle Crunches"
+        ]
+      },
+      {
+        "name": "Transverse Abdominis",
+        "common": "Deep Core",
+        "exercises": [
+          "Vacuum Exercise",
+          "Planks",
+          "Dead Bug",
+          "Pallof Press"
+        ]
+      },
+      {
+        "name": "Erector Spinae",
+        "common": "Lower Back",
+        "exercises": [
+          "Superman Exercise",
+          "Good Mornings",
+          "Romanian Deadlifts",
+          "Hyperextensions"
+        ]
+      }
     ]
   }
 } as const;
