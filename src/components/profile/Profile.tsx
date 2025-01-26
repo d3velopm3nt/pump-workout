@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { 
-  Trophy, Medal, Star, Flame, Award, TrendingUp, 
-  Crown, Calendar, Target, Dumbbell, ChevronRight,
-  Clock, BarChart, Heart
+  Trophy,Flame,
+   Calendar,
+  BarChart,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { GiMuscleUp, GiWeightLiftingUp } from 'react-icons/gi';
-import { FaDumbbell, FaBolt, FaFire } from 'react-icons/fa';
+import { FaDumbbell } from 'react-icons/fa';
 
 interface Achievement {
   id: number;

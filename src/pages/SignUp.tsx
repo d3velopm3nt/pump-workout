@@ -8,7 +8,7 @@ const SignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signUp } = useAuth();
+  const { register } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,7 +21,7 @@ const SignUp = () => {
     try {
       setError('');
       setLoading(true);
-      await signUp(email, password);
+      await register(email, password);
       navigate('/');
     } catch (err) {
       setError('Failed to create an account. Please try again.');

@@ -13,6 +13,7 @@ import { Achievements } from './components/gamification/Achievements';
 import { Challenges } from './components/gamification/Challenges';
 import { Goals } from './components/gamification/Goals';
 import { Profile } from './components/profile/Profile';
+import CharacterCreation from './pages/CharacterCreation';
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ function App() {
               <Route path="/landing" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/create-character" element={<CharacterCreation />} />
               
               {/* Protected routes - require authentication */}
               <Route element={<ProtectedLayout />}>

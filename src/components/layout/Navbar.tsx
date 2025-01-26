@@ -1,4 +1,3 @@
-import { Menu } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { ThemeToggle } from '../common/ThemeToggle';
 import { FaFire } from 'react-icons/fa';

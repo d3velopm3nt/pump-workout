@@ -26,7 +26,6 @@ export const calculateExperience = (action: string, metadata?: any): number => {
 export const checkAchievements = (
   action: string,
   currentProgress: any,
-  metadata?: any
 ) => {
   const unlockedAchievements = [];
   

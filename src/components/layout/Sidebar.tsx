@@ -1,7 +1,6 @@
 import { useLocation, Link } from 'react-router-dom';
 import { 
-  Dumbbell, 
-  Trophy, 
+  Dumbbell,  
   Target, 
   User, 
   Settings,

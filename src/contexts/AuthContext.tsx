@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { createClient, SupabaseClient, User } from '@supabase/supabase-js';
+import { createClient,  User } from '@supabase/supabase-js';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 interface AuthContextType {
@@ -42,20 +42,20 @@ supabase.auth.onAuthStateChange((event, session) => {
 });
 
 // Test the connection
-const testSupabaseConnection = async () => {
-  try {
-    const { data, error } = await supabase.from('test').select('*').limit(1);
-    if (error) {
-      console.error('Supabase connection error:', error);
-    } else {
-      console.log('Supabase connection successful');
-    }
-  } catch (err) {
-    console.error('Failed to test Supabase connection:', err);
-  }
-};
+// const testSupabaseConnection = async () => {
+//   try {
+//     const { data, error } = await supabase.from('users').select('*').limit(1);
+//     if (error) {
+//       console.error('Supabase connection error:', error);
+//     } else {
+//       console.log('Supabase connection successful');
+//     }
+//   } catch (err) {
+//     console.error('Failed to test Supabase connection:', err);
+//   }
+// };
 
-testSupabaseConnection();
+// testSupabaseConnection();
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);

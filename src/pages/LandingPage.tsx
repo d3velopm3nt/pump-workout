@@ -247,7 +247,7 @@ const LandingPage = () => {
                 <div className="badge badge-accent">Newbie Rewards</div>
               </div>
             </div>
-            <Link to="/signup" className="btn btn-primary btn-lg gap-2">
+            <Link to="/create-character" className="btn btn-primary btn-lg gap-2">
               Create Your Character
               <GiLevelThree className="h-5 w-5" />
             </Link>

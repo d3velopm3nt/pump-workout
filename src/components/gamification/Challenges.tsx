@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaDumbbell, FaFire, FaClock, FaTrophy, FaBolt, FaCalendar } from 'react-icons/fa';
+import { FaFire, FaClock,  FaBolt, } from 'react-icons/fa';
 import { GiMuscleUp, GiWeightLiftingUp, GiStopwatch } from 'react-icons/gi';
 
 interface Challenge {

@@ -1,10 +1,8 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { 
-  Clock, 
   Dumbbell, 
   Target, 
-  Activity,
   Users,
   ArrowLeft
 } from 'lucide-react';

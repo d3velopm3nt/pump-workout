@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { getMuscles, getBodySections, getMuscleGroups } from '../../config/exercises';
 import { GiMuscleUp, GiWeightLiftingUp } from 'react-icons/gi';
 import { FaDumbbell, FaBolt, FaFire } from 'react-icons/fa';

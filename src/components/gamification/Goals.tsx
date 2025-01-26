@@ -1,6 +1,6 @@
 import React from 'react';
-import { FaDumbbell, FaCalendarCheck, FaWeightHanging, FaTrophy, FaBolt, FaCheck } from 'react-icons/fa';
-import { GiMuscleUp, GiWeightLiftingUp, GiStopwatch, GiPodiumWinner } from 'react-icons/gi';
+import {  FaCalendarCheck, FaWeightHanging,  FaCheck } from 'react-icons/fa';
+import { GiMuscleUp,  GiPodiumWinner } from 'react-icons/gi';
 import { IoMdFitness } from 'react-icons/io';
 
 interface Goal {

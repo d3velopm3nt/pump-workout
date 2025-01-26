@@ -1,8 +1,8 @@
 import { useLocation, Link } from 'react-router-dom';
 import { getMuscles } from '../../config/exercises';
-import { ChevronRight, Trophy, Star, Clock } from 'lucide-react';
+import { ChevronRight, Trophy,  Clock } from 'lucide-react';
 import { GiMuscleUp, GiWeightLiftingUp } from 'react-icons/gi';
-import { FaDumbbell, FaFire, FaBolt } from 'react-icons/fa';
+import { FaDumbbell,  FaBolt } from 'react-icons/fa';
 
 export const ExerciseList = () => {
   const location = useLocation();
@@ -18,6 +18,7 @@ export const ExerciseList = () => {
 
   // Mock data for gamification elements
   const getExerciseStats = (exercise: string) => ({
+    exercise: exercise,
     personalBest: Math.floor(Math.random() * 200) + 50,
     completions: Math.floor(Math.random() * 100),
     xpReward: Math.floor(Math.random() * 50) + 10,
