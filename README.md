@@ -1,54 +1,113 @@
-# GitQuest - GitHub Profile Achievement Tracker
+# FitQuest - Exercise Tracking & Achievement System
 
-GitQuest is an interactive web application that helps developers track and unlock GitHub profile achievements while making the process fun and engaging.
+FitQuest is an interactive web application that helps users track their exercises and unlock achievements while making the fitness journey fun and engaging.
+
+## Exercise System Architecture
+
+### 1. Route Structure
+
+The application uses a hierarchical routing system for exercise-related features:
+
+```mermaid
+graph TD
+    A[Home] --> B[MuscleGroupNavigation]
+    A --> C[ExerciseList]
+    A --> D[ExerciseDetail]
+    C --> E[Exercise Categories]
+    D --> F[Exercise Info]
+```
+
+### 2. Component Flow
+
+#### MuscleGroupNavigation (`/`)
+- Entry point for exercise navigation
+- Uses `getBodySections()` to display main body sections ("Upper", "Lower")
+- For each section, uses `getMuscleGroups()` to show muscle groups (e.g., "Chest", "Back", etc.)
+
+Example usage:
+```typescript
+const bodySections = getBodySections(); // ["Upper", "Lower"]
+const upperBodyGroups = getMuscleGroups("Upper"); // ["Chest", "Back", "Shoulders", "Arms"]
+```
+
+#### ExerciseList (`/exercises`)
+- Displays exercises based on selected muscle group
+- Uses `getMuscles()` to get specific muscles in a group
+- Uses `getExercises()` to list exercises for each muscle
+
+### 3. Data Structure
+
+The exercise configuration follows this hierarchy:
+
+```mermaid
+graph TD
+    A[Body Section] --> B[Muscle Group]
+    B --> C[Muscle]
+    C --> D[Exercises]
+```
+
+Example:
+```
+Upper Body
+└── Chest
+    └── Upper Chest
+        ├── Incline Bench Press
+        ├── Incline Dumbbell Press
+        └── Incline Cable Fly
+```
+
+### 4. Helper Functions
+
+Available Utility Functions:
+- `getBodySections()`: Returns ["Upper", "Lower"]
+- `getMuscleGroups(section)`: Returns muscle groups for a body section
+- `getMuscles(section, group)`: Returns muscles in a group
+- `getExercises(section, group, muscle)`: Returns exercises for a specific muscle
 
 ## Features & Functionality
 
-### 1. Achievement Dashboard
+### 1. Exercise Dashboard
 ```mermaid
 graph TD
-    A[Dashboard] --> B[Unlocked Achievements]
-    A --> C[Available Achievements]
+    A[Dashboard] --> B[Exercise Categories]
+    A --> C[Available Exercises]
     A --> D[Progress Tracking]
-    B --> E[Achievement Details]
+    B --> E[Exercise Details]
     C --> F[Requirements]
     D --> G[Completion Status]
 ```
 
-- View all available GitHub achievements
-- Track progress towards each achievement
-- Detailed requirements for unlocking each badge
-- Real-time sync with GitHub profile
+- View all available exercises by muscle group
+- Track progress for each exercise
+- Detailed form requirements
+- Real-time progress tracking
 
-### 2. Achievement Categories
+### 2. Exercise Categories
 
-#### Profile Achievements
-- Pull Shark (Pull Request mastery)
-- YOLO (Merged PRs without review)
-- Quick Draw (Fast PR merges)
-- Pair Extraordinaire (Co-authored commits)
-- Galaxy Brain (Answered discussions)
-- Starstruck (Starred repositories)
+#### Upper Body
+- Chest
+- Back
+- Shoulders
+- Arms
 
-#### Repository Achievements
-- Arctic Code Vault
-- Public Sponsor
-- Mars 2020 Contributor
+#### Lower Body
+- Legs
+- Core
 
 ### 3. Progress Tracking
 - Real-time progress updates
 - Visual progress bars
-- Achievement completion estimates
-- Historical achievement data
+- Exercise completion estimates
+- Historical exercise data
 
 ### 4. User Features
-- GitHub OAuth integration
-- Personal achievement statistics
+- OAuth integration
+- Personal exercise statistics
 - Progress history
 - Achievement sharing capabilities
 
 ### 5. Interactive Guides
-- Step-by-step tutorials for each achievement
+- Step-by-step exercise tutorials
 - Best practices and tips
 - Common pitfalls to avoid
 - Community success stories
@@ -56,66 +115,104 @@ graph TD
 ### 6. Community Features
 - Share achievements on social media
 - Compare progress with friends
-- Achievement leaderboards
+- Exercise leaderboards
 - Community tips and tricks
 
 ### 7. Notification System
-- Achievement unlock alerts
+- Exercise completion alerts
 - Progress milestone notifications
-- New achievement announcements
+- New exercise announcements
 - Custom goal reminders
 
-## How It Works
+## Project Structure
 
-1. **Authentication**
-   - Log in with GitHub account
-   - Authorize necessary permissions
-   - Sync profile data
+The project follows a standard React application structure with TypeScript support:
 
-2. **Profile Analysis**
-   - Scan GitHub activity
-   - Calculate achievement progress
-   - Generate personalized roadmap
+```mermaid
+graph TD
+    A[src/] --> B[components/]
+    A --> C[contexts/]
+    A --> D[pages/]
+    B --> E[layout/]
+    B --> F[common/]
+    E --> G[Sidebar.tsx]
+    E --> H[Navbar.tsx]
+    F --> I[ThemeToggle.tsx]
+    C --> J[ThemeContext.tsx]
+    D --> K[LandingPage.tsx]
+```
 
-3. **Achievement Tracking**
-   - Monitor GitHub activities
-   - Update progress in real-time
-   - Notify on completion
+## Getting Started
 
-4. **Progress Visualization**
-   - Interactive progress bars
-   - Achievement statistics
-   - Historical data charts
+### Prerequisites
+- Node.js (v16 or higher)
+- npm or yarn
 
-## Routes & Pages
+### Installation
 
-### Main Routes
-- `/` - Landing page with feature overview
-- `/dashboard` - Main achievement dashboard
-- `/achievements` - Complete achievement catalog
-- `/profile` - User profile and statistics
-- `/guides` - Achievement guides and tutorials
-- `/community` - Community features and leaderboards
+1. Clone the repository
+```bash
+git clone <repository-url>
+cd <project-directory>
+```
 
-### Achievement-Specific Routes
-- `/achievements/:id` - Detailed view of specific achievement
-- `/guides/:achievement` - Specific achievement guide
-- `/progress/:achievement` - Detailed progress tracking
+2. Install dependencies
+```bash
+npm install
+# or
+yarn install
+```
 
-### User Routes
-- `/profile/settings` - User preferences
-- `/profile/history` - Achievement history
-- `/profile/stats` - Detailed statistics
+3. Start the development server
+```bash
+npm run dev
+# or
+yarn dev
+```
 
-## Planned Features
-- Achievement predictions
-- Custom achievement paths
-- Integration with other platforms
-- Mobile app version
-- Advanced analytics dashboard
-- Team achievements tracking
+The application will be available at `http://localhost:5173`
 
-This application helps developers gamify their GitHub journey while providing valuable insights into their development activities and achievements.
+## Development Guidelines
+
+### Component Structure
+- Place new components in appropriate directories under `src/components/`
+- Common/shared components go in `src/components/common/`
+- Layout components go in `src/components/layout/`
+
+### Styling
+- Use Tailwind CSS classes for styling
+- Custom styles can be added in `src/index.css`
+- Follow the project's theme system using ThemeContext
+
+### TypeScript
+- Ensure proper typing for all components and functions
+- Use interfaces for prop definitions
+- Keep types and interfaces in separate files when they become complex
+
+### State Management
+- Use React Context for global state (like theme)
+- Prefer local state for component-specific data
+- Consider using React Query for API data management
+
+## Technology Stack
+
+- React with TypeScript
+- TailwindCSS for styling
+- Context API for state management
+- React Router for navigation
+- React Query for data fetching
+
+## Future Enhancements
+
+Planned features for the exercise system:
+- Exercise search functionality
+- Filtering by equipment type
+- Custom exercise creation
+- Exercise progress tracking
+- Video demonstrations
+- Form checking AI integration
+
+This application helps users track their fitness journey while providing valuable insights into their exercise activities and achievements.
 
 ## Project Structure
 
