@@ -3,7 +3,7 @@ import { Sun, Moon, Menu } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 export const Navbar = () => {
-  const { user, signOut } = useAuth();
+  const { user, logout } = useAuth();
   
   const toggleTheme = () => {
     const html = document.querySelector('html');
@@ -30,7 +30,7 @@ export const Navbar = () => {
           <ul className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
             <li><a href="/profile">Profile</a></li>
             <li><a href="/settings">Settings</a></li>
-            <li><a onClick={() => signOut()}>Logout</a></li>
+            <li><a onClick={() => logout()}>Logout</a></li>
           </ul>
         </div>
       </div>
