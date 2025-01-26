@@ -14,6 +14,7 @@ export const Sidebar = () => {
   const location = useLocation();
   
   const menuItems = [
+    { icon: GiMuscleUp, label: 'Training Zones', path: '/training-zones' },
     { icon: Dumbbell, label: 'Exercises', path: '/exercises' },
     { icon: FaFire, label: 'Challenges', path: '/challenges' },
     { icon: Target, label: 'Goals', path: '/goals' },
@@ -37,10 +38,11 @@ export const Sidebar = () => {
               to={item.path}
               className={`
                 flex items-center gap-3 px-4 py-3 rounded-lg
-                transition-colors duration-200
+                transition-all duration-200 ease-in-out
+                text-primary hover:text-primary-focus
                 ${isActive 
-                  ? 'bg-primary text-primary-content' 
-                  : 'hover:bg-base-300'
+                  ? 'bg-primary/10 text-primary font-semibold shadow-sm' 
+                  : 'hover:bg-primary/5 hover:translate-x-1'
                 }
               `}
             >
@@ -49,15 +51,6 @@ export const Sidebar = () => {
             </Link>
           );
         })}
-        <li>
-          <Link 
-            to="/training-zones" 
-            className="flex items-center gap-3 text-base"
-          >
-            <GiMuscleUp className="w-5 h-5" />
-            Training Zones
-          </Link>
-        </li>
       </div>
     </div>
   );
