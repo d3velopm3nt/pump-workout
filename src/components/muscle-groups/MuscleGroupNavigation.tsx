@@ -1,12 +1,15 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getBodySections, getMuscleGroups } from '../../config/exercises';
-import { ChevronRight, Dumbbell } from 'lucide-react';
+import { ChevronRight, Dumbbell, ChevronDown, ChevronUp } from 'lucide-react';
+import { getMuscles, getBodySections, getMuscleGroups } from '../../config/exercises';
 
 export const MuscleGroupNavigation = () => {
   const [selectedSection, setSelectedSection] = useState<'Upper' | 'Lower' | null>(null);
-  const navigate = useNavigate();
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const sections = getBodySections();
+
+  const handleGroupClick = (group: string) => {
+    setSelectedGroup(selectedGroup === group ? null : group);
+  };
 
   return (
     <div className="container mx-auto p-6">
@@ -22,16 +25,51 @@ export const MuscleGroupNavigation = () => {
               </h2>
               
               {selectedSection === section ? (
-                <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="space-y-4 mt-4">
                   {getMuscleGroups(section as "Upper" | "Lower").map(group => (
-                    <button
-                      key={group}
-                      className="btn btn-primary flex items-center justify-between"
-                      onClick={() => navigate(`/muscles/${section.toLowerCase()}/${group.toLowerCase()}`)}
-                    >
-                      {group}
-                      <ChevronRight className="h-4 w-4" />
-                    </button>
+                    <div key={group} className="space-y-2">
+                      <button
+                        className="btn btn-primary w-full flex items-center justify-between"
+                        onClick={() => handleGroupClick(group)}
+                      >
+                        {group}
+                        {selectedGroup === group ? (
+                          <ChevronUp className="h-4 w-4" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4" />
+                        )}
+                      </button>
+
+                      {/* Muscles and exercises list */}
+                      {selectedGroup === group && (
+                        <div className="grid gap-4 mt-4 animate-fadeIn">
+                          {getMuscles(section as "Upper" | "Lower", group).map((muscle) => (
+                            <div key={muscle.name} className="card bg-base-300">
+                              <div className="card-body p-4">
+                                <h3 className="card-title text-lg">
+                                  {muscle.common}
+                                  <span className="text-sm text-base-content/60">
+                                    {muscle.name}
+                                  </span>
+                                </h3>
+                                
+                                <div className="divide-y divide-base-content/10">
+                                  {muscle.exercises.map((exercise) => (
+                                    <div
+                                      key={exercise}
+                                      className="flex items-center gap-3 py-2"
+                                    >
+                                      <Dumbbell className="h-4 w-4 text-primary" />
+                                      <span>{exercise}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
               ) : (
