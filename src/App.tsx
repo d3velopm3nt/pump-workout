@@ -5,24 +5,29 @@ import { MuscleGroupNavigation } from './components/muscle-groups/MuscleGroupNav
 import { AuthProvider } from './contexts/AuthContext';
 import { ExerciseList } from './components/muscle-groups/ExerciseList';
 import { ExerciseDetail } from './components/muscle-groups/ExerciseDetail';
+import LandingPage from './pages/LandingPage';
 
 const queryClient = new QueryClient();
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <BrowserRouter>
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
           <Routes>
+            {/* Public routes */}
+            <Route path="/landing" element={<LandingPage />} />
+            
+            {/* Protected routes */}
             <Route element={<ProtectedLayout />}>
               <Route path="/" element={<MuscleGroupNavigation />} />
               <Route path="/muscles/:section/:group" element={<ExerciseList />} />
               <Route path="/exercise/:id" element={<ExerciseDetail />} />
             </Route>
           </Routes>
-        </BrowserRouter>
-      </AuthProvider>
-    </QueryClientProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
   );
 }
 
