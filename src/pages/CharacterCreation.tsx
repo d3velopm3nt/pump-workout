@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GiMuscleUp, GiRunningNinja, GiMeditation } from 'react-icons/gi';
+import { useAuth } from '../contexts/AuthContext';
 
 interface CharacterClass {
   id: string;
@@ -60,24 +61,28 @@ const characterClasses: CharacterClass[] = [
 
 const CharacterCreation: React.FC = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [selectedClass, setSelectedClass] = useState<string>('');
   const [characterName, setCharacterName] = useState('');
   const [step, setStep] = useState(1);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleCreateCharacter = async () => {
-    // Here we would typically make an API call to create the character
-    // const character = {
-    //   name: characterName,
-    //   class: selectedClass,
-    //   level: 1,
-    //   experience: 0,
-    //   stats: characterClasses.find(c => c.id === selectedClass)?.startingStats
-    // };
-
-    // Save character data
     try {
-      // API call would go here
-      navigate('/dashboard'); // Redirect to dashboard after creation
+      // First create the user account
+      await register(email, password);
+      
+      // Then create character (API call would go here)
+    //   const character = {
+    //     name: characterName,
+    //     class: selectedClass,
+    //     level: 1,
+    //     experience: 0,
+    //     stats: characterClasses.find(c => c.id === selectedClass)?.startingStats
+    //   };
+      
+      navigate('/'); // Navigate to home after successful creation
     } catch (error) {
       console.error('Error creating character:', error);
     }
@@ -143,7 +148,7 @@ const CharacterCreation: React.FC = () => {
         {step === 2 && (
           <div className="card bg-base-200">
             <div className="card-body">
-              <h2 className="card-title">Customize Your Character</h2>
+              <h2 className="card-title">Create Your Account</h2>
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Character Name</span>
@@ -156,8 +161,30 @@ const CharacterCreation: React.FC = () => {
                   onChange={(e) => setCharacterName(e.target.value)}
                 />
               </div>
-              
-              {/* Additional customization options could go here */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Email</span>
+                </label>
+                <input
+                  type="email"
+                  placeholder="Enter email"
+                  className="input input-bordered"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Password</span>
+                </label>
+                <input
+                  type="password"
+                  placeholder="Enter password"
+                  className="input input-bordered"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
             </div>
           </div>
         )}
@@ -179,7 +206,7 @@ const CharacterCreation: React.FC = () => {
               Next
             </button>
           )}
-          {step === 2 && characterName && (
+          {step === 2 && characterName && email && password && (
             <button
               className="btn btn-primary"
               onClick={handleCreateCharacter}

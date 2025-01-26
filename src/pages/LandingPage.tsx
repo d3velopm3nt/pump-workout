@@ -56,7 +56,7 @@ const LandingPage = () => {
               Transform your workout experience with our gamified fitness platform. Train smarter, compete with friends, and achieve your goals while having fun!
             </p>
             <div className="flex gap-4 justify-center">
-              <Link to="/signup" className="btn btn-primary btn-lg gap-2">
+              <Link to="/login" className="btn btn-primary btn-lg gap-2">
                 Start Your Quest
                 <GiLevelThree className="h-5 w-5" />
               </Link>
@@ -247,7 +247,7 @@ const LandingPage = () => {
                 <div className="badge badge-accent">Newbie Rewards</div>
               </div>
             </div>
-            <Link to="/create-character" className="btn btn-primary btn-lg gap-2">
+            <Link to="/login" className="btn btn-primary btn-lg gap-2">
               Create Your Character
               <GiLevelThree className="h-5 w-5" />
             </Link>

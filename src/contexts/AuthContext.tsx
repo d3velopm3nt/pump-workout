@@ -112,7 +112,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (data?.user) {
           console.log('Successfully signed in:', data.user);
-          navigate('/');
+          // Check if user has created character
+          const { data: userData } = await supabase
+            .from('user_profiles')
+            .select('has_character')
+            .eq('user_id', data.user.id)
+            .single();
+
+          if (userData?.has_character) {
+            navigate('/');
+          } else {
+            navigate('/create-character');
+          }
         }
       } catch (err) {
         console.error('Detailed sign in error:', err);

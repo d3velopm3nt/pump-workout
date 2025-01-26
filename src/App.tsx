@@ -28,10 +28,10 @@ function App() {
               <Route path="/landing" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
-              <Route path="/create-character" element={<CharacterCreation />} />
               
               {/* Protected routes - require authentication */}
               <Route element={<ProtectedLayout />}>
+                <Route path="/create-character" element={<CharacterCreation />} />
                 <Route path="/" element={<MuscleGroupNavigation />} />
                 <Route path="/exercises" element={<ExerciseList />} />
                 <Route path="/exercise/:id" element={<ExerciseDetail />} />
