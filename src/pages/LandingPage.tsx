@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ThemeToggle } from '../components/common/ThemeToggle';
+import { FaFire } from 'react-icons/fa';
 
 const LandingPage = () => {
   return (
@@ -8,7 +9,10 @@ const LandingPage = () => {
       <header className="fixed top-0 left-0 right-0 z-50">
         <nav className="navbar bg-base-100/50 backdrop-blur-lg">
           <div className="flex-1">
-            <a className="btn btn-ghost text-xl">WorkoutMaster</a>
+            <Link to="/" className="btn btn-ghost text-xl flex items-center gap-2">
+              <FaFire className="h-6 w-6 text-primary" />
+              <span className="font-bold">FitQuest</span>
+            </Link>
           </div>
           <div className="flex-none gap-4">
             <ThemeToggle />

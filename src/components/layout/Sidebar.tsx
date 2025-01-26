@@ -5,13 +5,16 @@ import {
   Target, 
   User, 
   Settings,
-  BarChart
+  BarChart,
+  LogOut
 } from 'lucide-react';
 import { FaTrophy, FaList, FaFire } from 'react-icons/fa';
 import { GiMuscleUp } from 'react-icons/gi';
+import { useAuth } from '../../contexts/AuthContext';
 
 export const Sidebar = () => {
   const location = useLocation();
+  const { logout } = useAuth();
   
   const menuItems = [
     { icon: GiMuscleUp, label: 'Training Zones', path: '/training-zones' },
@@ -51,6 +54,17 @@ export const Sidebar = () => {
             </Link>
           );
         })}
+
+        {/* Signout Button */}
+        <button
+          onClick={() => logout()}
+          className="flex items-center gap-3 px-4 py-3 rounded-lg mt-auto
+            transition-all duration-200 ease-in-out text-error hover:text-error
+            hover:bg-error/5 hover:translate-x-1"
+        >
+          <LogOut className="h-5 w-5" />
+          <span>Sign Out</span>
+        </button>
       </div>
     </div>
   );
