@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GiMuscleUp, GiRunningNinja, GiMeditation } from 'react-icons/gi';
 import { useAuth } from '../contexts/AuthContext';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
 
 interface CharacterClass {
   id: string;
@@ -61,36 +67,89 @@ const characterClasses: CharacterClass[] = [
 
 const CharacterCreation: React.FC = () => {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { user } = useAuth();
   const [selectedClass, setSelectedClass] = useState<string>('');
   const [characterName, setCharacterName] = useState('');
   const [step, setStep] = useState(1);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleCreateCharacter = async () => {
+    if (!user) {
+      setError('User must be logged in to create a character');
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
     try {
-      // First create the user account
-      await register(email, password);
+      const selectedCharacterClass = characterClasses.find(c => c.id === selectedClass);
       
-      // Then create character (API call would go here)
-    //   const character = {
-    //     name: characterName,
-    //     class: selectedClass,
-    //     level: 1,
-    //     experience: 0,
-    //     stats: characterClasses.find(c => c.id === selectedClass)?.startingStats
-    //   };
-      
-      navigate('/'); // Navigate to home after successful creation
-    } catch (error) {
-      console.error('Error creating character:', error);
+      if (!selectedCharacterClass) {
+        throw new Error('Invalid character class selected');
+      }
+
+      // Create character profile
+      const { error: profileError } = await supabase
+        .from('user_profiles')
+        .upsert({
+          user_id: user.id,
+          character_name: characterName,
+          character_class: selectedClass,
+          level: 1,
+          experience: 0,
+          has_character: true,
+          stats: selectedCharacterClass.startingStats,
+          created_at: new Date().toISOString()
+        });
+
+      if (profileError) throw profileError;
+
+      // Create initial achievements
+      const { error: achievementError } = await supabase
+        .from('user_achievements')
+        .insert({
+          user_id: user.id,
+          achievement_id: 'character_created',
+          unlocked_at: new Date().toISOString()
+        });
+
+      if (achievementError) throw achievementError;
+
+      // Award starting XP
+      const { error: xpError } = await supabase
+        .from('user_experience')
+        .insert({
+          user_id: user.id,
+          amount: 100,
+          reason: 'Character Creation Bonus',
+          created_at: new Date().toISOString()
+        });
+
+      if (xpError) throw xpError;
+
+      navigate('/'); // Navigate to dashboard after successful creation
+    } catch (err) {
+      console.error('Error creating character:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create character');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-base-100 py-20 px-4">
       <div className="max-w-4xl mx-auto">
+        {error && (
+          <div className="alert alert-error mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{error}</span>
+          </div>
+        )}
+
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Create Your Fitness Character</h1>
           <div className="flex justify-center gap-2">
@@ -148,7 +207,7 @@ const CharacterCreation: React.FC = () => {
         {step === 2 && (
           <div className="card bg-base-200">
             <div className="card-body">
-              <h2 className="card-title">Create Your Account</h2>
+              <h2 className="card-title">Customize Your Character</h2>
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Character Name</span>
@@ -161,30 +220,19 @@ const CharacterCreation: React.FC = () => {
                   onChange={(e) => setCharacterName(e.target.value)}
                 />
               </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Email</span>
-                </label>
-                <input
-                  type="email"
-                  placeholder="Enter email"
-                  className="input input-bordered"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Password</span>
-                </label>
-                <input
-                  type="password"
-                  placeholder="Enter password"
-                  className="input input-bordered"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
+
+              {selectedClass && (
+                <div className="mt-4">
+                  <h3 className="font-bold mb-2">Selected Class</h3>
+                  <div className="flex items-center gap-2 p-4 bg-base-300 rounded-lg">
+                    {characterClasses.find(c => c.id === selectedClass)?.icon}
+                    <div>
+                      <p className="font-bold">{characterClasses.find(c => c.id === selectedClass)?.name}</p>
+                      <p className="text-sm opacity-70">{characterClasses.find(c => c.id === selectedClass)?.description}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -194,6 +242,7 @@ const CharacterCreation: React.FC = () => {
             <button
               className="btn btn-outline"
               onClick={() => setStep(1)}
+              disabled={isLoading}
             >
               Back
             </button>
@@ -202,16 +251,18 @@ const CharacterCreation: React.FC = () => {
             <button
               className="btn btn-primary"
               onClick={() => setStep(2)}
+              disabled={isLoading}
             >
               Next
             </button>
           )}
-          {step === 2 && characterName && email && password && (
+          {step === 2 && characterName && (
             <button
-              className="btn btn-primary"
+              className={`btn btn-primary ${isLoading ? 'loading' : ''}`}
               onClick={handleCreateCharacter}
+              disabled={isLoading}
             >
-              Create Character
+              {isLoading ? 'Creating...' : 'Create Character'}
             </button>
           )}
         </div>
