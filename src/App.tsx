@@ -11,23 +11,26 @@ const queryClient = new QueryClient();
 
 function App() {
   return (
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/landing" element={<LandingPage />} />
-            
-            {/* Protected routes */}
-            <Route element={<ProtectedLayout />}>
-              <Route path="/" element={<MuscleGroupNavigation />} />
-              <Route path="/muscles/:section/:group" element={<ExerciseList />} />
-              <Route path="/exercise/:id" element={<ExerciseDetail />} />
-            </Route>
-          </Routes>
-        </AuthProvider>
-      </QueryClientProvider>
-    </BrowserRouter>
+    <div data-theme="dark" className="min-h-screen bg-base-100">
+      <button className="btn btn-primary">Test Button</button>
+      <BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/landing" element={<LandingPage />} />
+              
+              {/* Protected routes */}
+              <Route element={<ProtectedLayout />}>
+                <Route path="/" element={<MuscleGroupNavigation />} />
+                <Route path="/muscles/:section/:group" element={<ExerciseList />} />
+                <Route path="/exercise/:id" element={<ExerciseDetail />} />
+              </Route>
+            </Routes>
+          </AuthProvider>
+        </QueryClientProvider>
+      </BrowserRouter>
+    </div>
   );
 }
 

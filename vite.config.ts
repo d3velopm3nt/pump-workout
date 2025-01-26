@@ -1,8 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
+// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  envPrefix: 'VITE_'  // This is the default prefix
+  envPrefix: 'VITE_',  // This is the default prefix
+  server: {
+    port: 5173,
+  }
 })
