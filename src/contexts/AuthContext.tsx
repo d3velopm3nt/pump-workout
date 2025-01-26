@@ -30,6 +30,9 @@ const supabase = createClient(
   import.meta.env.VITE_SUPABASE_ANON_KEY
 );
 
+// List of public routes that don't require authentication
+const publicRoutes = ['/landing', '/login', '/signup'];
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,7 +44,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
-      if (!session?.user && location.pathname !== '/landing') {
+      
+      // Only redirect if not on a public route and not authenticated
+      if (!session?.user && !publicRoutes.includes(location.pathname)) {
         navigate('/landing');
       }
     });
@@ -50,7 +55,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       setLoading(false);
-      if (!session?.user && location.pathname !== '/landing') {
+      
+      // Only redirect if not on a public route and not authenticated
+      if (!session?.user && !publicRoutes.includes(location.pathname)) {
         navigate('/landing');
       }
     });

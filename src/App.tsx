@@ -19,19 +19,19 @@ function App() {
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <Routes>
-              {/* Public routes */}
+              {/* Public routes - accessible without authentication */}
               <Route path="/landing" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
               
-              {/* Protected routes */}
+              {/* Protected routes - require authentication */}
               <Route element={<ProtectedLayout />}>
                 <Route path="/" element={<MuscleGroupNavigation />} />
                 <Route path="/muscles/:section/:group" element={<ExerciseList />} />
                 <Route path="/exercise/:id" element={<ExerciseDetail />} />
               </Route>
 
-              {/* Catch all route */}
+              {/* Redirect all other routes to landing */}
               <Route path="*" element={<Navigate to="/landing" replace />} />
             </Routes>
           </AuthProvider>
