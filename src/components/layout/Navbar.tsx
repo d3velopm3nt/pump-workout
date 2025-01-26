@@ -2,11 +2,22 @@ import { useAuth } from '../../contexts/AuthContext';
 import { ThemeToggle } from '../common/ThemeToggle';
 import { FaFire } from 'react-icons/fa';
 
-export const Navbar = () => {
+interface NavbarProps {
+  onMenuClick: () => void;
+}
+
+export const Navbar = ({ onMenuClick }: NavbarProps) => {
   const { user, logout } = useAuth();
   
   return (
-    <div className="navbar bg-base-100 border-b">
+    <nav className="navbar fixed top-0 left-0 right-0 z-40 bg-base-100/95 backdrop-blur-sm border-b border-base-200">
+      <div className="flex-none md:hidden">
+        <button className="btn btn-ghost btn-square" onClick={onMenuClick}>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-5 h-5 stroke-current">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
       <div className="flex-1">
         <a className="btn btn-ghost text-xl flex items-center gap-2">
           <FaFire className="h-6 w-6 text-primary" />
@@ -28,6 +39,6 @@ export const Navbar = () => {
           </ul>
         </div>
       </div>
-    </div>
+    </nav>
   );
 }; 

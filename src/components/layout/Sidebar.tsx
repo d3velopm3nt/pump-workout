@@ -11,7 +11,11 @@ import { FaTrophy, FaList, FaFire } from 'react-icons/fa';
 import { GiMuscleUp } from 'react-icons/gi';
 import { useAuth } from '../../contexts/AuthContext';
 
-export const Sidebar = () => {
+interface SidebarProps {
+  onClose: () => void;
+}
+
+export const Sidebar = ({ onClose }: SidebarProps) => {
   const location = useLocation();
   const { logout } = useAuth();
   
@@ -28,7 +32,14 @@ export const Sidebar = () => {
   ];
 
   return (
-    <div className="w-64 min-h-screen bg-base-200 p-4">
+    <div className="h-full flex flex-col bg-base-100 border-r border-base-200">
+      <div className="md:hidden p-4 flex justify-end">
+        <button className="btn btn-ghost btn-square" onClick={onClose}>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-5 h-5 stroke-current">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
       <div className="flex flex-col gap-2">
         {menuItems.map((item) => {
           const Icon = item.icon;
