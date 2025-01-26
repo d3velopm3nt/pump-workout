@@ -1,12 +1,20 @@
-import { useParams, Link } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { getMuscles } from '../../config/exercises';
 import { ChevronRight, Trophy, Star, Clock } from 'lucide-react';
 import { GiMuscleUp, GiWeightLiftingUp } from 'react-icons/gi';
 import { FaDumbbell, FaFire, FaBolt } from 'react-icons/fa';
 
 export const ExerciseList = () => {
-  const { section, group } = useParams<{ section: string; group: string }>();
-  const muscles = getMuscles(section as "Upper" | "Lower", group || "");
+  const location = useLocation();
+  const { section, group } = location.state || {};
+  
+  // Add error handling for getMuscles
+  let muscles: any[] = [];
+  try {
+    muscles = getMuscles(section as "Upper" | "Lower", group || "") || [];
+  } catch (error) {
+    console.error('Error loading muscles:', error);
+  }
 
   // Mock data for gamification elements
   const getExerciseStats = (exercise: string) => ({
@@ -78,7 +86,7 @@ export const ExerciseList = () => {
               </div>
               
               <div className="space-y-4">
-                {muscle.exercises.map((exercise) => {
+                {muscle.exercises.map((exercise: string) => {
                   const stats = getExerciseStats(exercise);
                   return (
                     <Link

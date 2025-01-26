@@ -30,12 +30,13 @@ function App() {
               {/* Protected routes - require authentication */}
               <Route element={<ProtectedLayout />}>
                 <Route path="/" element={<MuscleGroupNavigation />} />
-                <Route path="/muscles/:section/:group" element={<ExerciseList />} />
+                <Route path="/exercises" element={<ExerciseList />} />
                 <Route path="/exercise/:id" element={<ExerciseDetail />} />
                 <Route path="/achievements" element={<Achievements />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/challenges" element={<Challenges />} />
                 <Route path="/goals" element={<Goals />} />
+                <Route path="/training-zones" element={<MuscleGroupNavigation />} />
               </Route>
 
               {/* Redirect all other routes to landing */}

@@ -8,12 +8,13 @@ import {
   BarChart
 } from 'lucide-react';
 import { FaTrophy, FaList, FaFire } from 'react-icons/fa';
+import { GiMuscleUp } from 'react-icons/gi';
 
 export const Sidebar = () => {
   const location = useLocation();
   
   const menuItems = [
-    { icon: Dumbbell, label: 'Exercises', path: '/' },
+    { icon: Dumbbell, label: 'Exercises', path: '/exercises' },
     { icon: FaFire, label: 'Challenges', path: '/challenges' },
     { icon: Target, label: 'Goals', path: '/goals' },
     { icon: BarChart, label: 'Progress', path: '/progress' },
@@ -48,6 +49,15 @@ export const Sidebar = () => {
             </Link>
           );
         })}
+        <li>
+          <Link 
+            to="/training-zones" 
+            className="flex items-center gap-3 text-base"
+          >
+            <GiMuscleUp className="w-5 h-5" />
+            Training Zones
+          </Link>
+        </li>
       </div>
     </div>
   );
