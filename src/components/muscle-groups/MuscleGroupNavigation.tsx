@@ -1,27 +1,29 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { muscleGroups } from '../../config/muscleGroups';
+import { getBodySections, getMuscleGroups } from '../../config/exercises';
 
 export const MuscleGroupNavigation = () => {
   const [selectedSection, setSelectedSection] = useState<'Upper' | 'Lower' | null>(null);
   const navigate = useNavigate();
 
+  const sections = getBodySections();
+
   return (
     <div className="p-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {Object.entries(muscleGroups).map(([section, data]) => (
+        {sections.map(section => (
           <div key={section} className="card bg-base-200 shadow-xl">
             <div className="card-body">
               <h2 className="card-title">{section} Body</h2>
               {selectedSection === section ? (
                 <div className="grid grid-cols-2 gap-4">
-                  {Object.entries(data).map(([muscleGroup, exercises]) => (
+                  {getMuscleGroups(section as "Upper" | "Lower").map(group => (
                     <button
-                      key={muscleGroup}
+                      key={group}
                       className="btn btn-primary"
-                      onClick={() => navigate(`/muscles/${section.toLowerCase()}/${muscleGroup.toLowerCase()}`)}
+                      onClick={() => navigate(`/muscles/${section.toLowerCase()}/${group.toLowerCase()}`)}
                     >
-                      {muscleGroup}
+                      {group}
                     </button>
                   ))}
                 </div>
