@@ -33,6 +33,7 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
 
   return (
     <div className="h-full flex flex-col bg-base-100 border-r border-base-200">
+      {/* Mobile Close Button */}
       <div className="md:hidden p-4 flex justify-end">
         <button className="btn btn-ghost btn-square" onClick={onClose}>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-5 h-5 stroke-current">
@@ -40,7 +41,15 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
           </svg>
         </button>
       </div>
-      <div className="flex flex-col gap-2">
+
+      {/* Logo - Desktop Only */}
+      <div className="hidden md:flex items-center gap-2 p-4 mb-4">
+        <FaFire className="h-6 w-6 text-primary" />
+        <span className="font-bold text-xl">FitQuest</span>
+      </div>
+
+      {/* Menu Items */}
+      <div className="flex flex-col gap-2 p-2">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
@@ -49,10 +58,11 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
             <Link
               key={item.path}
               to={item.path}
+              onClick={() => onClose()} // Close sidebar on mobile when clicking a link
               className={`
                 flex items-center gap-3 px-4 py-3 rounded-lg
                 transition-all duration-200 ease-in-out
-                text-primary hover:text-primary-focus
+                text-base-content hover:text-primary
                 ${isActive 
                   ? 'bg-primary/10 text-primary font-semibold shadow-sm' 
                   : 'hover:bg-primary/5 hover:translate-x-1'
@@ -67,7 +77,10 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
 
         {/* Signout Button */}
         <button
-          onClick={() => logout()}
+          onClick={() => {
+            logout();
+            onClose(); // Close sidebar on mobile when logging out
+          }}
           className="flex items-center gap-3 px-4 py-3 rounded-lg mt-auto
             transition-all duration-200 ease-in-out text-error hover:text-error
             hover:bg-error/5 hover:translate-x-1"

@@ -50,7 +50,7 @@ export const ProtectedLayout = () => {
         <div className="flex flex-col md:flex-row">
           {/* Mobile Sidebar Overlay */}
           <div 
-            className={`fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity duration-300 ${
+            className={`fixed inset-0 bg-black/50 z-30 md:hidden transition-opacity duration-300 ${
               isSidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
             }`}
             onClick={() => setIsSidebarOpen(false)}
@@ -58,7 +58,7 @@ export const ProtectedLayout = () => {
           
           {/* Sidebar */}
           <div 
-            className={`fixed md:static inset-y-0 left-0 w-72 bg-base-100 z-50 transform transition-transform duration-300 md:transform-none ${
+            className={`fixed md:static inset-y-0 left-0 w-72 bg-base-100 z-40 transform transition-transform duration-300 md:transform-none ${
               isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
             }`}
           >
