@@ -11,6 +11,7 @@ import SignUp from './pages/SignUp';
 import { Leaderboard } from './components/gamification/Leaderboard';
 import { Achievements } from './components/gamification/Achievements';
 import { Challenges } from './components/gamification/Challenges';
+import { Goals } from './components/gamification/Goals';
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ function App() {
                 <Route path="/achievements" element={<Achievements />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/challenges" element={<Challenges />} />
+                <Route path="/goals" element={<Goals />} />
               </Route>
 
               {/* Redirect all other routes to landing */}
