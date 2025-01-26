@@ -1,26 +1,40 @@
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { 
   Clock, 
   Dumbbell, 
   Target, 
   Activity,
-  Users
+  Users,
+  ArrowLeft
 } from 'lucide-react';
+
+interface ExerciseDetails {
+  id: string;
+  name: string;
+  description: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  environment: 'gym' | 'home' | 'both';
+  equipment: string[];
+  muscleGroups: string[];
+  userSubmitted: boolean;
+  votes: number;
+  variations: string[];
+}
 
 export const ExerciseDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const decodedExerciseName = id ? decodeURIComponent(id) : '';
 
-  // This would normally fetch from an API
-  const { data: exercise, isLoading } = useQuery({
-    queryKey: ['exercise', id],
+  const { data: exercise, isLoading } = useQuery<ExerciseDetails>({
+    queryKey: ['exercise', decodedExerciseName],
     queryFn: async () => ({
-      id,
-      name: 'Bench Press',
-      description: 'A compound exercise that primarily targets the chest muscles...',
-      difficulty: 'intermediate' as const,
-      environment: 'gym' as const,
-      equipment: ['Barbell', 'Bench', 'Weight Plates'],
+      id: decodedExerciseName,
+      name: decodedExerciseName,
+      description: 'A compound exercise that targets multiple muscle groups. Proper form and technique are essential for maximum effectiveness and safety.',
+      difficulty: 'intermediate',
+      environment: 'gym',
+      equipment: ['Barbell', 'Bench', 'Weight Plates', 'Safety Rack'],
       muscleGroups: ['Chest', 'Shoulders', 'Triceps'],
       userSubmitted: false,
       votes: 245,
@@ -46,6 +60,11 @@ export const ExerciseDetail = () => {
 
   return (
     <div className="container mx-auto p-6">
+      <Link to=".." className="btn btn-ghost gap-2 mb-6">
+        <ArrowLeft className="h-4 w-4" />
+        Back to exercises
+      </Link>
+
       <div className="card bg-base-200 shadow-xl">
         <div className="card-body">
           <h2 className="card-title text-2xl">{exercise.name}</h2>
