@@ -33,6 +33,30 @@ const supabase = createClient(
 // List of public routes that don't require authentication
 const publicRoutes = ['/landing', '/login', '/signup'];
 
+// Verify Supabase connection
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('Supabase auth event:', event);
+  if (session) {
+    console.log('Session exists:', session);
+  }
+});
+
+// Test the connection
+const testSupabaseConnection = async () => {
+  try {
+    const { data, error } = await supabase.from('test').select('*').limit(1);
+    if (error) {
+      console.error('Supabase connection error:', error);
+    } else {
+      console.log('Supabase connection successful');
+    }
+  } catch (err) {
+    console.error('Failed to test Supabase connection:', err);
+  }
+};
+
+testSupabaseConnection();
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -69,19 +93,63 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     user,
     loading,
     signIn: async (email: string, password: string) => {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
-      navigate('/');
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) {
+          console.error('Sign in error:', error);
+          switch (error.message) {
+            case 'Invalid login credentials':
+              throw new Error('Invalid email or password');
+            case 'Email not confirmed':
+              throw new Error('Please verify your email address');
+            default:
+              throw new Error(error.message);
+          }
+        }
+
+        if (data?.user) {
+          console.log('Successfully signed in:', data.user);
+          navigate('/');
+        }
+      } catch (err) {
+        console.error('Detailed sign in error:', err);
+        throw err;
+      }
     },
     signOut: async () => {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      navigate('/landing');
+      try {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+        navigate('/landing');
+      } catch (err) {
+        console.error('Sign out error:', err);
+        throw err;
+      }
     },
     signUp: async (email: string, password: string) => {
-      const { error } = await supabase.auth.signUp({ email, password });
-      if (error) throw error;
-      navigate('/');
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+
+        if (error) {
+          console.error('Sign up error:', error);
+          throw error;
+        }
+
+        if (data?.user) {
+          console.log('Successfully signed up:', data.user);
+          navigate('/');
+        }
+      } catch (err) {
+        console.error('Detailed sign up error:', err);
+        throw err;
+      }
     },
   };
 

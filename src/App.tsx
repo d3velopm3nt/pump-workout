@@ -14,7 +14,6 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <div data-theme="dark" className="min-h-screen bg-base-100">
-      <button className="btn btn-primary">Test Button</button>
       <BrowserRouter>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>

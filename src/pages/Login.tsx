@@ -16,10 +16,9 @@ const Login = () => {
       setError('');
       setLoading(true);
       await signIn(email, password);
-      navigate('/');
     } catch (err) {
-      setError('Failed to sign in. Please check your credentials.');
-      console.error(err);
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      console.error('Login error:', err);
     } finally {
       setLoading(false);
     }
