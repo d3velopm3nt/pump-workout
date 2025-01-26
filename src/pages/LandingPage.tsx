@@ -1,18 +1,23 @@
 import { Link } from 'react-router-dom';
+import { ThemeToggle } from '../components/common/ThemeToggle';
 
 const LandingPage = () => {
   return (
     <div className="min-h-screen bg-base-100">
       {/* Navbar */}
-      <div className="navbar bg-base-100/50 backdrop-blur-lg fixed top-0 z-50 border-b border-base-300">
-        <div className="navbar-start">
-          <div className="text-xl font-bold text-primary">FitQuest</div>
-        </div>
-        <div className="navbar-end">
-          <Link to="/login" className="btn btn-ghost btn-sm">Login</Link>
-          <Link to="/signup" className="btn btn-primary btn-sm ml-2">Sign Up</Link>
-        </div>
-      </div>
+      <header className="fixed top-0 left-0 right-0 z-50">
+        <nav className="navbar bg-base-100/50 backdrop-blur-lg">
+          <div className="flex-1">
+            <a className="btn btn-ghost text-xl">WorkoutMaster</a>
+          </div>
+          <div className="flex-none gap-4">
+            <ThemeToggle />
+            <Link to="/login" className="btn btn-primary">
+              Get Started
+            </Link>
+          </div>
+        </nav>
+      </header>
 
       {/* Hero Section */}
       <div className="hero min-h-screen relative">

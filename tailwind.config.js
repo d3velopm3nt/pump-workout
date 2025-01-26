@@ -21,6 +21,21 @@ export default {
   daisyui: {
     themes: [
       {
+        light: {
+          "primary": "#10b981",
+          "primary-focus": "#059669",
+          "primary-content": "#ffffff",
+          "secondary": "#0ea5e9",
+          "accent": "#22c55e",
+          "neutral": "#262626",
+          "base-100": "#ffffff",
+          "base-200": "#f3f4f6",
+          "base-300": "#e5e7eb",
+          "info": "#06b6d4",
+          "success": "#22c55e",
+          "warning": "#f59e0b",
+          "error": "#ef4444",
+        },
         dark: {
           "primary": "#10b981",
           "primary-focus": "#059669",
