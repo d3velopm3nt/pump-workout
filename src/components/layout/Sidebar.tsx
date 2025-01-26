@@ -7,17 +7,20 @@ import {
   Settings,
   BarChart
 } from 'lucide-react';
+import { FaTrophy, FaList, FaFire } from 'react-icons/fa';
 
 export const Sidebar = () => {
   const location = useLocation();
   
   const menuItems = [
     { icon: Dumbbell, label: 'Exercises', path: '/' },
-    { icon: Trophy, label: 'Challenges', path: '/challenges' },
+    { icon: FaFire, label: 'Challenges', path: '/challenges' },
     { icon: Target, label: 'Goals', path: '/goals' },
     { icon: BarChart, label: 'Progress', path: '/progress' },
+    { icon: FaTrophy, label: 'Achievements', path: '/achievements' },
+    { icon: FaList, label: 'Leaderboard', path: '/leaderboard' },
     { icon: User, label: 'Profile', path: '/profile' },
-    { icon: Settings, label: 'Settings', path: '/settings' },
+    { icon: Settings, label: 'Settings', path: '/settings' }
   ];
 
   return (

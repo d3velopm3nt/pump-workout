@@ -8,6 +8,9 @@ import { ExerciseDetail } from './components/muscle-groups/ExerciseDetail';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
+import { Leaderboard } from './components/gamification/Leaderboard';
+import { Achievements } from './components/gamification/Achievements';
+import { Challenges } from './components/gamification/Challenges';
 
 const queryClient = new QueryClient();
 
@@ -28,6 +31,9 @@ function App() {
                 <Route path="/" element={<MuscleGroupNavigation />} />
                 <Route path="/muscles/:section/:group" element={<ExerciseList />} />
                 <Route path="/exercise/:id" element={<ExerciseDetail />} />
+                <Route path="/achievements" element={<Achievements />} />
+                <Route path="/leaderboard" element={<Leaderboard />} />
+                <Route path="/challenges" element={<Challenges />} />
               </Route>
 
               {/* Redirect all other routes to landing */}

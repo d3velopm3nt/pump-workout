@@ -4,19 +4,19 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 interface AuthContextType {
   user: User | null;
-  loading: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  register: (email: string, password: string) => Promise<void>;
+  isLoading: boolean;
 }
 
 // Create initial context value
 const initialContextValue: AuthContextType = {
   user: null,
-  loading: true,
-  signIn: async () => { throw new Error('Not implemented') },
-  signOut: async () => { throw new Error('Not implemented') },
-  signUp: async () => { throw new Error('Not implemented') },
+  login: async () => {},
+  logout: async () => {},
+  register: async () => {},
+  isLoading: true
 };
 
 // Initialize context with the default value
@@ -59,7 +59,7 @@ testSupabaseConnection();
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Check active sessions and sets the user
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
-      setLoading(false);
+      setIsLoading(false);
       
       // Only redirect if not on a public route and not authenticated
       if (!session?.user && !publicRoutes.includes(location.pathname)) {
@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Listen for changes on auth state
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
-      setLoading(false);
+      setIsLoading(false);
       
       // Only redirect if not on a public route and not authenticated
       if (!session?.user && !publicRoutes.includes(location.pathname)) {
@@ -91,8 +91,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const value = {
     user,
-    loading,
-    signIn: async (email: string, password: string) => {
+    login: async (email: string, password: string) => {
       try {
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
@@ -120,7 +119,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         throw err;
       }
     },
-    signOut: async () => {
+    logout: async () => {
       try {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
@@ -130,7 +129,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         throw err;
       }
     },
-    signUp: async (email: string, password: string) => {
+    register: async (email: string, password: string) => {
       try {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -151,9 +150,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         throw err;
       }
     },
+    isLoading,
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <span className="loading loading-spinner loading-lg"></span>
