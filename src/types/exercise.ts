@@ -1,7 +1,5 @@
-import { ObjectId } from 'mongodb';
-
 export interface Exercise {
-  _id?: ObjectId;
+  _id?: string;
   name: string;
   description: string;
   muscleGroups: string[];
