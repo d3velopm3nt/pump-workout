@@ -1,4 +1,4 @@
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuthContext } from '../../contexts/AuthContext';
 import { ThemeToggle } from '../common/ThemeToggle';
 import { FaFire } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
@@ -8,7 +8,7 @@ interface NavbarProps {
 }
 
 export const Navbar = ({ onMenuClick }: NavbarProps) => {
-  const { user, logout } = useAuth();
+  const { user, logout } = useAuthContext();
   
   return (
     <nav className="navbar fixed top-0 left-0 right-0 z-50 bg-base-100/95 backdrop-blur-sm border-b border-base-200">
@@ -30,7 +30,10 @@ export const Navbar = ({ onMenuClick }: NavbarProps) => {
         <div className="dropdown dropdown-end">
           <div tabIndex={0} className="btn btn-ghost btn-circle avatar">
             <div className="w-10 rounded-full">
-              <img src={user?.user_metadata.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg'} alt="User avatar" />
+              <img 
+                src={user?.imageUrl || 'https://api.dicebear.com/7.x/avataaars/svg'} 
+                alt="User avatar" 
+              />
             </div>
           </div>
           <ul className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">

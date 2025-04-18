@@ -1,87 +1,73 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GiMuscleUp, GiRunningNinja, GiMeditation } from 'react-icons/gi';
-import { useAuth } from '../contexts/AuthContext';
 
 interface CharacterClass {
   id: string;
   name: string;
-  icon: React.ReactElement;
   description: string;
+  icon: React.ReactNode;
   startingStats: {
     strength: number;
-    endurance: number;
     agility: number;
-    vitality: number;
+    endurance: number;
   };
-  specialAbility: string;
 }
 
 const characterClasses: CharacterClass[] = [
   {
     id: 'warrior',
-    name: 'Strength Warrior',
+    name: 'Warrior',
+    description: 'Focus on strength training and powerlifting',
     icon: <GiMuscleUp className="w-12 h-12" />,
-    description: 'Focused on strength training and power lifting. Bonus XP for strength-based exercises.',
     startingStats: {
       strength: 8,
-      endurance: 5,
-      agility: 3,
-      vitality: 6
-    },
-    specialAbility: 'Power Surge: +20% strength gains after consecutive workout days'
+      agility: 4,
+      endurance: 6
+    }
   },
   {
     id: 'rogue',
-    name: 'Agility Specialist',
+    name: 'Rogue',
+    description: 'Specialize in HIIT and agility workouts',
     icon: <GiRunningNinja className="w-12 h-12" />,
-    description: 'Specializes in cardio and HIIT workouts. Bonus XP for speed-based activities.',
     startingStats: {
       strength: 4,
-      endurance: 7,
       agility: 8,
-      vitality: 5
-    },
-    specialAbility: 'Swift Recovery: -15% rest time needed between exercises'
+      endurance: 6
+    }
   },
   {
     id: 'monk',
-    name: 'Wellness Monk',
+    name: 'Monk',
+    description: 'Master of endurance and bodyweight exercises',
     icon: <GiMeditation className="w-12 h-12" />,
-    description: 'Balanced approach focusing on flexibility and mindfulness. Bonus XP for consistency.',
     startingStats: {
       strength: 5,
-      endurance: 6,
-      agility: 6,
-      vitality: 7
-    },
-    specialAbility: 'Inner Peace: +25% XP for maintaining daily workout streaks'
+      agility: 5,
+      endurance: 8
+    }
   }
 ];
 
 const CharacterCreation: React.FC = () => {
   const navigate = useNavigate();
-  const { register } = useAuth();
   const [selectedClass, setSelectedClass] = useState<string>('');
   const [characterName, setCharacterName] = useState('');
   const [step, setStep] = useState(1);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 
   const handleCreateCharacter = async () => {
     try {
-      // First create the user account
-      await register(email, password);
+      // Create character in your backend
+      const character = {
+        name: characterName,
+        class: selectedClass,
+        level: 1,
+        experience: 0,
+        stats: characterClasses.find(c => c.id === selectedClass)?.startingStats
+      };
       
-      // Then create character (API call would go here)
-    //   const character = {
-    //     name: characterName,
-    //     class: selectedClass,
-    //     level: 1,
-    //     experience: 0,
-    //     stats: characterClasses.find(c => c.id === selectedClass)?.startingStats
-    //   };
-      
+      // TODO: Make API call to save character
       navigate('/'); // Navigate to home after successful creation
     } catch (error) {
       console.error('Error creating character:', error);
@@ -89,55 +75,43 @@ const CharacterCreation: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-base-100 py-20 px-4">
+    <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Create Your Fitness Character</h1>
-          <div className="flex justify-center gap-2">
-            <div className={`badge ${step === 1 ? 'badge-primary' : 'badge-ghost'}`}>
-              Choose Class
-            </div>
-            <div className={`badge ${step === 2 ? 'badge-primary' : 'badge-ghost'}`}>
-              Customize
-            </div>
-          </div>
-        </div>
-
+        <h1 className="text-3xl font-bold mb-8">Create Your Character</h1>
+        
         {step === 1 && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {characterClasses.map((charClass) => (
               <div
                 key={charClass.id}
-                className={`card bg-base-200 hover:shadow-xl transition-all cursor-pointer
-                  ${selectedClass === charClass.id ? 'ring-2 ring-primary' : ''}`}
+                className={`card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer ${
+                  selectedClass === charClass.id ? 'border-2 border-primary' : ''
+                }`}
                 onClick={() => setSelectedClass(charClass.id)}
               >
                 <div className="card-body">
-                  <div className="flex justify-center mb-4">
+                  <div className="flex items-center justify-center mb-4">
                     {charClass.icon}
                   </div>
                   <h2 className="card-title justify-center">{charClass.name}</h2>
-                  <p className="text-center text-sm">{charClass.description}</p>
+                  <p className="text-center">{charClass.description}</p>
                   
-                  <div className="divider">Starting Stats</div>
-                  
-                  <div className="stats stats-vertical shadow bg-base-300">
-                    {Object.entries(charClass.startingStats).map(([stat, value]) => (
-                      <div key={stat} className="stat">
-                        <div className="stat-title capitalize">{stat}</div>
-                        <div className="stat-value text-primary text-2xl">{value}</div>
-                        <progress
-                          className="progress progress-primary w-full"
-                          value={value}
-                          max="10"
-                        ></progress>
-                      </div>
-                    ))}
-                  </div>
-
                   <div className="mt-4">
-                    <div className="badge badge-secondary">Special Ability</div>
-                    <p className="text-sm mt-2">{charClass.specialAbility}</p>
+                    <div className="badge badge-secondary mb-2">Starting Stats</div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="text-center">
+                        <div className="text-sm font-bold">STR</div>
+                        <div>{charClass.startingStats.strength}</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-sm font-bold">AGI</div>
+                        <div>{charClass.startingStats.agility}</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-sm font-bold">END</div>
+                        <div>{charClass.startingStats.endurance}</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -146,9 +120,9 @@ const CharacterCreation: React.FC = () => {
         )}
 
         {step === 2 && (
-          <div className="card bg-base-200">
+          <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
-              <h2 className="card-title">Create Your Account</h2>
+              <h2 className="card-title">Character Details</h2>
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Character Name</span>
@@ -161,35 +135,11 @@ const CharacterCreation: React.FC = () => {
                   onChange={(e) => setCharacterName(e.target.value)}
                 />
               </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Email</span>
-                </label>
-                <input
-                  type="email"
-                  placeholder="Enter email"
-                  className="input input-bordered"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Password</span>
-                </label>
-                <input
-                  type="password"
-                  placeholder="Enter password"
-                  className="input input-bordered"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
             </div>
           </div>
         )}
 
-        <div className="flex justify-center gap-4 mt-8">
+        <div className="mt-8 flex justify-between">
           {step === 2 && (
             <button
               className="btn btn-outline"
@@ -200,13 +150,13 @@ const CharacterCreation: React.FC = () => {
           )}
           {step === 1 && selectedClass && (
             <button
-              className="btn btn-primary"
+              className="btn btn-primary ml-auto"
               onClick={() => setStep(2)}
             >
               Next
             </button>
           )}
-          {step === 2 && characterName && email && password && (
+          {step === 2 && characterName && (
             <button
               className="btn btn-primary"
               onClick={handleCreateCharacter}

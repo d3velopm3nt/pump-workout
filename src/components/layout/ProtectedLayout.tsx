@@ -1,42 +1,37 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { Sidebar } from './Sidebar';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '@clerk/clerk-react';
 import { GamificationProvider } from '../../contexts/GamificationContext';
 import { UserLevel } from '../gamification/UserLevel';
 import { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
 import { GiLevelThree, GiCharacter } from 'react-icons/gi';
 import { Link } from 'react-router-dom';
 
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
-
 export const ProtectedLayout = () => {
-  const { user } = useAuth();
+  const { isSignedIn, isLoaded } = useAuth();
   const [hasCharacter, setHasCharacter] = useState<boolean | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
     const checkCharacterStatus = async () => {
-      if (user) {
-        const { data } = await supabase
-          .from('user_profiles')
-          .select('has_character')
-          .eq('user_id', user.id)
-          .single();
-        
-        setHasCharacter(data?.has_character ?? false);
-      }
+      // TODO: Implement character status check with your backend
+      setHasCharacter(true);
     };
 
     checkCharacterStatus();
-  }, [user]);
+  }, []);
 
-  if (!user) {
+  if (!isLoaded) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
+
+  if (!isSignedIn) {
     return <Navigate to="/login" replace />;
   }
 
@@ -66,49 +61,18 @@ export const ProtectedLayout = () => {
           </div>
 
           {/* Main Content */}
-          <main className="flex-1 p-4 md:p-6 pt-20 md:pt-24">
+          <main className="flex-1 pt-16 md:pt-0">
             {showCharacterBanner && (
-              <div className="card bg-base-100 border border-base-300 shadow-sm mb-8 hover:shadow-md transition-shadow duration-300">
-                <div className="card-body p-4 md:p-6">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                      <h2 className="card-title text-xl md:text-2xl mb-2 text-base-content">Begin Your Adventure!</h2>
-                      <p className="text-base-content/70 text-sm md:text-base">
-                        Create your character to start earning XP and unlocking achievements.
-                      </p>
-                      <div className="flex flex-wrap gap-2 mt-4">
-                        <div className="badge badge-ghost gap-1">
-                          <GiCharacter className="w-4 h-4 text-primary" />
-                          +100 XP Bonus
-                        </div>
-                        <div className="badge badge-ghost">Starter Pack</div>
-                      </div>
-                    </div>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                      <div className="stats bg-base-200 shadow-sm">
-                        <div className="stat py-2 px-4">
-                          <div className="stat-figure text-primary">
-                            <GiCharacter className="w-6 h-6" />
-                          </div>
-                          <div className="stat-title text-xs">Reward</div>
-                          <div className="stat-value text-primary text-2xl">100</div>
-                          <div className="stat-desc text-xs">Starting XP</div>
-                        </div>
-                      </div>
-                      <Link 
-                        to="/create-character" 
-                        className="btn btn-primary btn-outline gap-2 hover:gap-3 transition-all duration-300 w-full sm:w-auto"
-                      >
-                        Create Character
-                        <GiLevelThree className="h-5 w-5" />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
+              <div className="bg-primary/10 p-4 text-center">
+                <Link to="/create-character" className="inline-flex items-center gap-2 text-primary hover:underline">
+                  <GiCharacter className="h-5 w-5" />
+                  Create your character to start your fitness journey!
+                </Link>
               </div>
             )}
-            <UserLevel />
-            <Outlet />
+            <div className="p-4 md:p-8">
+              <Outlet />
+            </div>
           </main>
         </div>
       </div>

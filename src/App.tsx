@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ClerkProvider } from '@clerk/clerk-react';
 import { ProtectedLayout } from './components/layout/ProtectedLayout';
 import { MuscleGroupNavigation } from './components/muscle-groups/MuscleGroupNavigation';
 import { AuthProvider } from './contexts/AuthContext';
@@ -17,38 +18,47 @@ import CharacterCreation from './pages/CharacterCreation';
 
 const queryClient = new QueryClient();
 
+// Get the Clerk publishable key from environment variables
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
+if (!clerkPubKey) {
+  throw new Error('Missing Clerk Publishable Key');
+}
+
 function App() {
   return (
     <div data-theme="light" className="min-h-screen bg-base-100">
-      <BrowserRouter>
+      <ClerkProvider publishableKey={clerkPubKey}>
         <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <Routes>
-              {/* Public routes - accessible without authentication */}
-              <Route path="/landing" element={<LandingPage />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<SignUp />} />
-              
-              {/* Protected routes - require authentication */}
-              <Route element={<ProtectedLayout />}>
-                <Route path="/create-character" element={<CharacterCreation />} />
-                <Route path="/" element={<MuscleGroupNavigation />} />
-                <Route path="/exercises" element={<ExerciseList />} />
-                <Route path="/exercise/:id" element={<ExerciseDetail />} />
-                <Route path="/achievements" element={<Achievements />} />
-                <Route path="/leaderboard" element={<Leaderboard />} />
-                <Route path="/challenges" element={<Challenges />} />
-                <Route path="/goals" element={<Goals />} />
-                <Route path="/training-zones" element={<MuscleGroupNavigation />} />
-                <Route path="/profile" element={<Profile />} />
-              </Route>
+          <BrowserRouter>
+            <AuthProvider>
+              <Routes>
+                {/* Public routes - accessible without authentication */}
+                <Route path="/landing" element={<LandingPage />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<SignUp />} />
+                
+                {/* Protected routes - require authentication */}
+                <Route element={<ProtectedLayout />}>
+                  <Route path="/create-character" element={<CharacterCreation />} />
+                  <Route path="/" element={<MuscleGroupNavigation />} />
+                  <Route path="/exercises" element={<ExerciseList />} />
+                  <Route path="/exercise/:id" element={<ExerciseDetail />} />
+                  <Route path="/achievements" element={<Achievements />} />
+                  <Route path="/leaderboard" element={<Leaderboard />} />
+                  <Route path="/challenges" element={<Challenges />} />
+                  <Route path="/goals" element={<Goals />} />
+                  <Route path="/training-zones" element={<MuscleGroupNavigation />} />
+                  <Route path="/profile" element={<Profile />} />
+                </Route>
 
-              {/* Redirect all other routes to landing */}
-              <Route path="*" element={<Navigate to="/landing" replace />} />
-            </Routes>
-          </AuthProvider>
+                {/* Redirect all other routes to landing */}
+                <Route path="*" element={<Navigate to="/landing" replace />} />
+              </Routes>
+            </AuthProvider>
+          </BrowserRouter>
         </QueryClientProvider>
-      </BrowserRouter>
+      </ClerkProvider>
     </div>
   );
 }
