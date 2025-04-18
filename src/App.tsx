@@ -6,6 +6,7 @@ import { MuscleGroupNavigation } from './components/muscle-groups/MuscleGroupNav
 import { AuthProvider } from './contexts/AuthContext';
 import { ExerciseList } from './components/muscle-groups/ExerciseList';
 import { ExerciseDetail } from './components/muscle-groups/ExerciseDetail';
+import { ExerciseManagement } from './pages/ExerciseManagement';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
@@ -44,6 +45,7 @@ function App() {
                   <Route path="/" element={<MuscleGroupNavigation />} />
                   <Route path="/exercises" element={<ExerciseList />} />
                   <Route path="/exercise/:id" element={<ExerciseDetail />} />
+                  <Route path="/exercise-management" element={<ExerciseManagement />} />
                   <Route path="/achievements" element={<Achievements />} />
                   <Route path="/leaderboard" element={<Leaderboard />} />
                   <Route path="/challenges" element={<Challenges />} />

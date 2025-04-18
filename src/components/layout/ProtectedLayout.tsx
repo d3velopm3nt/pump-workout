@@ -32,7 +32,9 @@ export const ProtectedLayout = () => {
   }
 
   if (!isSignedIn) {
-    return <Navigate to="/login" replace />;
+    // Save the attempted URL to redirect back after login
+    const returnTo = encodeURIComponent(location.pathname + location.search);
+    return <Navigate to={`/landing?redirect=${returnTo}`} replace />;
   }
 
   // Don't show the character creation banner on the character creation page

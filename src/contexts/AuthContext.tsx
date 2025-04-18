@@ -32,19 +32,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Get the redirect URL from query parameters
+  const getRedirectUrl = () => {
+    const params = new URLSearchParams(location.search);
+    const redirect = params.get('redirect');
+    return redirect ? decodeURIComponent(redirect) : '/';
+  };
+
   const value = {
     user,
     login: async () => {
-      // Clerk handles login through their components
-      navigate('/login');
+      // Store the current location to redirect back after login
+      const returnTo = location.pathname === '/landing' ? getRedirectUrl() : location.pathname;
+      navigate(`/login?redirect=${encodeURIComponent(returnTo)}`);
     },
     logout: async () => {
       await signOut();
       navigate('/landing');
     },
     register: async () => {
-      // Clerk handles registration through their components
-      navigate('/signup');
+      // Store the current location to redirect back after registration
+      const returnTo = location.pathname === '/landing' ? getRedirectUrl() : location.pathname;
+      navigate(`/signup?redirect=${encodeURIComponent(returnTo)}`);
     },
     isLoading: !isLoaded
   };
@@ -55,6 +64,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         <span className="loading loading-spinner loading-lg"></span>
       </div>
     );
+  }
+
+  // If user is signed in and we have a redirect URL, navigate to it
+  if (isSignedIn && location.pathname === '/login') {
+    const redirectUrl = getRedirectUrl();
+    navigate(redirectUrl);
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
