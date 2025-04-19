@@ -13,20 +13,19 @@ import {
 } from '../components/ui/select';
 import { Checkbox } from '../components/ui/checkbox';
 import { muscleGroups, equipment } from '../types/muscles';
-import { Exercise } from '../types/exercise';
+import { Exercise, SelectedMuscle } from '../types/exercise';
 import { createExercise, getExercises, updateExercise, deleteExercise } from '../services/exerciseService';
 import { Textarea } from '../components/ui/textarea';
 import { useAuthContext } from '../contexts/AuthContext';
+import { MuscleSelector } from '../components/muscle-groups/MuscleSelector';
 
 export function ExerciseManagement() {
   const queryClient = useQueryClient();
+  const [selectedMuscles, setSelectedMuscles] = useState<SelectedMuscle[]>([]);
+  const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingExercise, setEditingExercise] = useState<Exercise | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedMuscleGroup, setSelectedMuscleGroup] = useState('');
-  const [selectedMuscles, setSelectedMuscles] = useState<string[]>([]);
-  const [selectedPrimaryMuscle, setSelectedPrimaryMuscle] = useState('');
-  const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
 
   // Query for fetching exercises
   const { data, isLoading, error } = useQuery({
@@ -74,9 +73,7 @@ export function ExerciseManagement() {
   const resetForm = () => {
     setIsEditing(false);
     setEditingExercise(null);
-    setSelectedMuscleGroup('');
     setSelectedMuscles([]);
-    setSelectedPrimaryMuscle('');
     setSelectedEquipment([]);
   };
 
@@ -87,9 +84,7 @@ export function ExerciseManagement() {
     const exerciseData: Partial<Exercise> = {
       name: formData.get('name') as string,
       description: formData.get('description') as string,
-      muscleGroups: [selectedMuscleGroup],
       muscles: selectedMuscles,
-      primaryMuscle: selectedPrimaryMuscle,
       equipment: selectedEquipment,
       instructions: (formData.get('instructions') as string)?.split('\n').filter(Boolean) || [],
       tips: (formData.get('tips') as string)?.split('\n').filter(Boolean) || [],
@@ -106,9 +101,7 @@ export function ExerciseManagement() {
   const handleEdit = (exercise: Exercise) => {
     setEditingExercise(exercise);
     setIsEditing(true);
-    setSelectedMuscleGroup(exercise.muscleGroups?.[0] || '');
     setSelectedMuscles(exercise.muscles || []);
-    setSelectedPrimaryMuscle(exercise.primaryMuscle || '');
     setSelectedEquipment(exercise.equipment || []);
   };
 
@@ -142,7 +135,7 @@ export function ExerciseManagement() {
   }
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Exercise Management</h1>
         {!isEditing && (
@@ -189,77 +182,10 @@ export function ExerciseManagement() {
             </div>
 
             <div className="space-y-4">
-              <Label>Muscle Groups & Muscles</Label>
-              <Select
-                value={selectedMuscleGroup}
-                onValueChange={(value: string) => {
-                  setSelectedMuscleGroup(value);
-                  setSelectedMuscles([]);
-                  setSelectedPrimaryMuscle('');
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select muscle group" />
-                </SelectTrigger>
-                <SelectContent>
-                  {muscleGroups.map((group) => (
-                    <SelectItem key={group.name} value={group.name}>
-                      {group.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              {selectedMuscleGroup && (
-                <div className="space-y-2">
-                  <Label>Select Muscles (Multiple)</Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {muscleGroups
-                      .find((g) => g.name === selectedMuscleGroup)
-                      ?.muscles.map((muscle) => (
-                        <div key={muscle} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`muscle-${muscle}`}
-                            checked={selectedMuscles.includes(muscle)}
-                            onCheckedChange={(checked: boolean) => {
-                              if (checked) {
-                                setSelectedMuscles([...selectedMuscles, muscle]);
-                              } else {
-                                setSelectedMuscles(selectedMuscles.filter((m) => m !== muscle));
-                              }
-                            }}
-                          />
-                          <Label htmlFor={`muscle-${muscle}`} className="text-sm">
-                            {muscle}
-                          </Label>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              {selectedMuscleGroup && (
-                <div className="space-y-2">
-                  <Label>Primary Muscle</Label>
-                  <Select
-                    value={selectedPrimaryMuscle}
-                    onValueChange={setSelectedPrimaryMuscle}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select primary muscle" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {muscleGroups
-                        .find((g) => g.name === selectedMuscleGroup)
-                        ?.muscles.map((muscle) => (
-                          <SelectItem key={muscle} value={muscle}>
-                            {muscle}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
+              <MuscleSelector
+                selectedMuscles={selectedMuscles}
+                onSelectedMusclesChange={setSelectedMuscles}
+              />
             </div>
 
             <div className="space-y-2">
@@ -334,37 +260,34 @@ export function ExerciseManagement() {
             />
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {exercises.map((exercise: Exercise) => (
-              <div
-                key={exercise._id}
-                className="p-4 rounded-lg border space-y-2"
-              >
+          <div className="space-y-4">
+            {exercises?.map((exercise) => (
+              <div key={exercise._id} className="border p-4 rounded-lg">
                 <div className="flex justify-between items-start">
-                  <h3 className="font-semibold">{exercise.name}</h3>
-                  <div className="flex space-x-2">
+                  <div>
+                    <h3 className="text-lg font-semibold">{exercise.name}</h3>
+                    <p className="text-sm text-muted-foreground">{exercise.description}</p>
+                    <div className="text-sm">
+                      <p><strong>Muscles:</strong> {exercise.muscles?.map((m: SelectedMuscle) => `${m.name} (${m.effectiveness})`).join(', ') || 'None'}</p>
+                      <p><strong>Equipment:</strong> {exercise.equipment?.join(', ') || 'None'}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
                     <Button
-                      variant="ghost"
-                      size="icon"
+                      variant="outline"
+                      size="sm"
                       onClick={() => handleEdit(exercise)}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => exercise._id && handleDelete(exercise._id)}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDelete(exercise._id!)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                </div>
-                <p className="text-sm text-muted-foreground">{exercise.description}</p>
-                <div className="text-sm">
-                  <p><strong>Muscle Groups:</strong> {exercise.muscleGroups?.join(', ') || 'None'}</p>
-                  <p><strong>Muscles:</strong> {exercise.muscles?.join(', ') || 'None'}</p>
-                  <p><strong>Primary Muscle:</strong> {exercise.primaryMuscle || 'None'}</p>
-                  <p><strong>Equipment:</strong> {exercise.equipment?.join(', ') || 'None'}</p>
                 </div>
               </div>
             ))}

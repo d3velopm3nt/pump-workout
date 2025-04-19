@@ -1,16 +1,17 @@
+export interface SelectedMuscle {
+  name: string;
+  effectiveness: 'low' | 'middle' | 'high' | 'primary';
+}
+
 export interface Exercise {
   _id?: string;
   name: string;
   description: string;
-  muscleGroups: string[];
-  muscles: string[];
-  primaryMuscle: string;
+  muscles: SelectedMuscle[];
   equipment: string[];
   instructions: string[];
-  tips?: string[];
-  commonMistakes?: string[];
-  createdAt?: Date;
-  updatedAt?: Date;
+  tips: string[];
+  commonMistakes: string[];
 }
 
 export interface MuscleGroup {

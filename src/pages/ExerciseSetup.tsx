@@ -13,12 +13,17 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/components/ui/use-toast';
+import { MuscleSelector } from '@/components/muscle-groups/MuscleSelector';
+
+interface SelectedMuscle {
+  name: string;
+  effectiveness: 'low' | 'middle' | 'high';
+}
 
 interface Exercise {
   name: string;
   description: string;
-  muscleGroups: string[];
-  primaryMuscle: string;
+  muscles: SelectedMuscle[];
   equipment: string;
   difficulty: string;
   instructions: string[];
@@ -30,8 +35,7 @@ export function ExerciseSetup() {
   const [exercise, setExercise] = useState<Exercise>({
     name: '',
     description: '',
-    muscleGroups: [],
-    primaryMuscle: '',
+    muscles: [],
     equipment: '',
     difficulty: 'intermediate',
     instructions: [''],
@@ -67,8 +71,7 @@ export function ExerciseSetup() {
       setExercise({
         name: '',
         description: '',
-        muscleGroups: [],
-        primaryMuscle: '',
+        muscles: [],
         equipment: '',
         difficulty: 'intermediate',
         instructions: [''],
@@ -110,6 +113,10 @@ export function ExerciseSetup() {
     }));
   };
 
+  const handleSelectedMusclesChange = (muscles: SelectedMuscle[]) => {
+    setExercise({ ...exercise, muscles });
+  };
+
   return (
     <div className="container mx-auto py-8">
       <Card>
@@ -138,25 +145,10 @@ export function ExerciseSetup() {
               />
             </div>
 
-            <div>
-              <Label htmlFor="primaryMuscle">Primary Muscle</Label>
-              <Select
-                value={exercise.primaryMuscle}
-                onValueChange={(value) => setExercise({ ...exercise, primaryMuscle: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select primary muscle" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="chest">Chest</SelectItem>
-                  <SelectItem value="back">Back</SelectItem>
-                  <SelectItem value="shoulders">Shoulders</SelectItem>
-                  <SelectItem value="legs">Legs</SelectItem>
-                  <SelectItem value="arms">Arms</SelectItem>
-                  <SelectItem value="core">Core</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <MuscleSelector
+              selectedMuscles={exercise.muscles}
+              onSelectedMusclesChange={handleSelectedMusclesChange}
+            />
 
             <div>
               <Label htmlFor="difficulty">Difficulty</Label>
