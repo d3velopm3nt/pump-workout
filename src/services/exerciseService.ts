@@ -1,4 +1,4 @@
-import { fetchFromApi, API_ENDPOINT } from '../utils/mongodb';
+import { fetchFromApi } from '../utils/mongodb';
 import type { Exercise } from '../types/exercise';
 
 export async function createExercise(exercise: Omit<Exercise, '_id' | 'createdAt' | 'updatedAt'>) {
@@ -16,8 +16,8 @@ export async function createExercise(exercise: Omit<Exercise, '_id' | 'createdAt
 
 export async function getExercises(filters?: {
   muscleGroup?: string;
-  equipment?: string;
-  difficulty?: 'beginner' | 'intermediate' | 'advanced';
+  muscles?: string[];
+  equipment?: string[];
   search?: string;
 }) {
   try {
@@ -27,12 +27,16 @@ export async function getExercises(filters?: {
       queryParams.append('muscleGroup', filters.muscleGroup);
     }
     
-    if (filters?.equipment) {
-      queryParams.append('equipment', filters.equipment);
+    if (filters?.muscles?.length) {
+      filters.muscles.forEach(muscle => {
+        queryParams.append('muscles', muscle);
+      });
     }
     
-    if (filters?.difficulty) {
-      queryParams.append('difficulty', filters.difficulty);
+    if (filters?.equipment?.length) {
+      filters.equipment.forEach(item => {
+        queryParams.append('equipment', item);
+      });
     }
     
     if (filters?.search) {

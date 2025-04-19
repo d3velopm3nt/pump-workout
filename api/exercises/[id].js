@@ -1,32 +1,12 @@
-import { MongoClient, ObjectId } from 'mongodb';
-
-// MongoDB connection
-const uri = process.env.MONGODB_URI || "mongodb+srv://admin:tools@cluster0.fmstbx8.mongodb.net/?retryWrites=true&w=majority";
-let cachedClient = null;
-let cachedDb = null;
-
-// Function to connect to MongoDB (with connection caching)
-async function connectToDatabase() {
-  if (cachedClient && cachedDb) {
-    return { client: cachedClient, db: cachedDb };
-  }
-
-  const client = new MongoClient(uri);
-  await client.connect();
-  const db = client.db("pump");
-  
-  cachedClient = client;
-  cachedDb = db;
-  
-  return { client, db };
-}
+import { ObjectId } from 'mongodb';
+import { connectToDatabase } from '../../src/utils/mongodb';
 
 // Handler for /api/exercises/[id] endpoint
 export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,PATCH,DELETE,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
 
   // Handle OPTIONS request (for CORS preflight)
@@ -35,10 +15,8 @@ export default async function handler(req, res) {
     return;
   }
 
-  // Get exercise ID from URL
   const { id } = req.query;
   
-  // Validate ID
   if (!id || !ObjectId.isValid(id)) {
     return res.status(400).json({ error: 'Invalid exercise ID' });
   }
@@ -46,57 +24,67 @@ export default async function handler(req, res) {
   try {
     const { db } = await connectToDatabase();
     const collection = db.collection('exercises');
-    
-    // GET request - get exercise by ID
+    const query = { _id: new ObjectId(id) };
+
+    // Handle GET request - get single exercise
     if (req.method === 'GET') {
-      const exercise = await collection.findOne({ _id: new ObjectId(id) });
+      const exercise = await collection.findOne(query);
       
       if (!exercise) {
         return res.status(404).json({ error: 'Exercise not found' });
       }
       
-      res.status(200).json(exercise);
+      return res.status(200).json(exercise);
     }
     
-    // PATCH request - update exercise
-    else if (req.method === 'PATCH') {
-      const exercise = req.body;
+    // Handle PUT/PATCH request - update exercise
+    else if (req.method === 'PUT' || req.method === 'PATCH') {
+      let updates;
+      try {
+        updates = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+      } catch (e) {
+        return res.status(400).json({ error: 'Invalid JSON in request body' });
+      }
+
+      updates = {
+        ...updates,
+        updatedAt: new Date()
+      };
       
-      const result = await collection.updateOne(
-        { _id: new ObjectId(id) },
-        {
-          $set: {
-            ...exercise,
-            updatedAt: new Date()
-          }
-        }
+      const result = await collection.findOneAndUpdate(
+        query,
+        { $set: updates },
+        { returnDocument: 'after' }
       );
       
-      if (result.matchedCount === 0) {
+      if (!result.value) {
         return res.status(404).json({ error: 'Exercise not found' });
       }
       
-      res.status(200).json({ success: true, updatedCount: result.modifiedCount });
+      return res.status(200).json(result.value);
     }
     
-    // DELETE request - delete exercise
+    // Handle DELETE request
     else if (req.method === 'DELETE') {
-      const result = await collection.deleteOne({ _id: new ObjectId(id) });
+      const result = await collection.findOneAndDelete(query);
       
-      if (result.deletedCount === 0) {
+      if (!result.value) {
         return res.status(404).json({ error: 'Exercise not found' });
       }
       
-      res.status(200).json({ success: true });
+      return res.status(200).json({ message: 'Exercise deleted successfully' });
     }
     
-    // Unsupported method
+    // Handle unsupported methods
     else {
-      res.setHeader('Allow', ['GET', 'PATCH', 'DELETE', 'OPTIONS']);
-      res.status(405).json({ error: `Method ${req.method} Not Allowed` });
+      res.setHeader('Allow', ['GET', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);
+      return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
     }
   } catch (error) {
-    console.error(`Error handling ${req.method} request for exercise ID ${id}:`, error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error in exercise handler:', error);
+    return res.status(500).json({ 
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 } 

@@ -16,6 +16,9 @@ import { Challenges } from './components/gamification/Challenges';
 import { Goals } from './components/gamification/Goals';
 import { Profile } from './components/profile/Profile';
 import CharacterCreation from './pages/CharacterCreation';
+import { ExerciseSetup } from './pages/ExerciseSetup';
+import { Toaster } from './components/ui/toaster';
+import { ThemeProvider } from './components/theme-provider';
 
 const queryClient = new QueryClient();
 
@@ -28,41 +31,45 @@ if (!clerkPubKey) {
 
 function App() {
   return (
-    <div data-theme="light" className="min-h-screen bg-base-100">
-      <ClerkProvider publishableKey={clerkPubKey}>
-        <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-            <AuthProvider>
-              <Routes>
-                {/* Public routes - accessible without authentication */}
-                <Route path="/landing" element={<LandingPage />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<SignUp />} />
-                
-                {/* Protected routes - require authentication */}
-                <Route element={<ProtectedLayout />}>
-                  <Route path="/create-character" element={<CharacterCreation />} />
-                  <Route path="/" element={<MuscleGroupNavigation />} />
-                  <Route path="/exercises" element={<ExerciseList />} />
-                  <Route path="/exercise/:id" element={<ExerciseDetail />} />
-                  <Route path="/exercise-management" element={<ExerciseManagement />} />
-                  <Route path="/achievements" element={<Achievements />} />
-                  <Route path="/leaderboard" element={<Leaderboard />} />
-                  <Route path="/challenges" element={<Challenges />} />
-                  <Route path="/goals" element={<Goals />} />
-                  <Route path="/training-zones" element={<MuscleGroupNavigation />} />
-                  <Route path="/profile" element={<Profile />} />
-                </Route>
+    <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
+      <div className="min-h-screen bg-background text-foreground">
+        <ClerkProvider publishableKey={clerkPubKey}>
+          <QueryClientProvider client={queryClient}>
+            <BrowserRouter>
+              <AuthProvider>
+                <Routes>
+                  {/* Public routes - accessible without authentication */}
+                  <Route path="/landing" element={<LandingPage />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<SignUp />} />
+                  
+                  {/* Protected routes - require authentication */}
+                  <Route element={<ProtectedLayout />}>
+                    <Route path="/create-character" element={<CharacterCreation />} />
+                    <Route path="/" element={<MuscleGroupNavigation />} />
+                    <Route path="/exercises" element={<ExerciseList />} />
+                    <Route path="/exercise/:id" element={<ExerciseDetail />} />
+                    <Route path="/exercise-management" element={<ExerciseManagement />} />
+                    <Route path="/exercise-setup" element={<ExerciseSetup />} />
+                    <Route path="/achievements" element={<Achievements />} />
+                    <Route path="/leaderboard" element={<Leaderboard />} />
+                    <Route path="/challenges" element={<Challenges />} />
+                    <Route path="/goals" element={<Goals />} />
+                    <Route path="/training-zones" element={<MuscleGroupNavigation />} />
+                    <Route path="/profile" element={<Profile />} />
+                  </Route>
 
-                {/* Redirect all other routes to landing */}
-                <Route path="*" element={<Navigate to="/landing" replace />} />
-              </Routes>
-            </AuthProvider>
-          </BrowserRouter>
-        </QueryClientProvider>
-      </ClerkProvider>
-    </div>
+                  {/* Redirect all other routes to landing */}
+                  <Route path="*" element={<Navigate to="/landing" replace />} />
+                </Routes>
+                <Toaster />
+              </AuthProvider>
+            </BrowserRouter>
+          </QueryClientProvider>
+        </ClerkProvider>
+      </div>
+    </ThemeProvider>
   );
 }
 
-export default App; 
+export default App;

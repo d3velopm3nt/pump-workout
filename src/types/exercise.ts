@@ -3,16 +3,14 @@ export interface Exercise {
   name: string;
   description: string;
   muscleGroups: string[];
+  muscles: string[];
   primaryMuscle: string;
   equipment: string[];
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
   instructions: string[];
-  tips: string[];
-  commonMistakes: string[];
-  videoUrl?: string;
-  createdBy?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  tips?: string[];
+  commonMistakes?: string[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface MuscleGroup {

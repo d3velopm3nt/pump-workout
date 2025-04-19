@@ -1,32 +1,12 @@
 import { MongoClient } from 'mongodb';
-
-// MongoDB connection
-const uri = process.env.MONGODB_URI || "mongodb+srv://admin:tools@cluster0.fmstbx8.mongodb.net/?retryWrites=true&w=majority";
-let cachedClient = null;
-let cachedDb = null;
-
-// Function to connect to MongoDB (with connection caching)
-async function connectToDatabase() {
-  if (cachedClient && cachedDb) {
-    return { client: cachedClient, db: cachedDb };
-  }
-
-  const client = new MongoClient(uri);
-  await client.connect();
-  const db = client.db("pump");
-  
-  cachedClient = client;
-  cachedDb = db;
-  
-  return { client, db };
-}
+import { connectToDatabase } from '../../src/utils/mongodb';
 
 // Handler for /api/exercises endpoint
 export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST,PATCH,DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
 
   // Handle OPTIONS request (for CORS preflight)
@@ -35,12 +15,12 @@ export default async function handler(req, res) {
     return;
   }
 
-  // Handle GET request - get all exercises
-  if (req.method === 'GET') {
-    try {
-      const { db } = await connectToDatabase();
-      const collection = db.collection('exercises');
-      
+  try {
+    const { db } = await connectToDatabase();
+    const collection = db.collection('exercises');
+
+    // Handle GET request - get all exercises
+    if (req.method === 'GET') {
       const query = {};
       const { muscleGroup, equipment, difficulty, search } = req.query;
       
@@ -64,20 +44,22 @@ export default async function handler(req, res) {
       }
       
       const exercises = await collection.find(query).toArray();
-      res.status(200).json(exercises);
-    } catch (error) {
-      console.error('Error getting exercises:', error);
-      res.status(500).json({ error: 'Failed to fetch exercises' });
+      return res.status(200).json(exercises);
     }
-  }
-  
-  // Handle POST request - create exercise
-  else if (req.method === 'POST') {
-    try {
-      const { db } = await connectToDatabase();
-      const collection = db.collection('exercises');
+    
+    // Handle POST request - create exercise
+    else if (req.method === 'POST') {
+      let exercise;
+      try {
+        exercise = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+      } catch (e) {
+        return res.status(400).json({ error: 'Invalid JSON in request body' });
+      }
       
-      const exercise = req.body;
+      if (!exercise || !exercise.name) {
+        return res.status(400).json({ error: 'Exercise name is required' });
+      }
+
       const newExercise = {
         ...exercise,
         createdAt: new Date(),
@@ -85,16 +67,19 @@ export default async function handler(req, res) {
       };
       
       const result = await collection.insertOne(newExercise);
-      res.status(201).json({ ...newExercise, _id: result.insertedId });
-    } catch (error) {
-      console.error('Error creating exercise:', error);
-      res.status(500).json({ error: 'Failed to create exercise' });
+      return res.status(201).json({ ...newExercise, _id: result.insertedId });
     }
-  }
-  
-  // Handle unsupported methods
-  else {
-    res.setHeader('Allow', ['GET', 'POST', 'OPTIONS']);
-    res.status(405).json({ error: `Method ${req.method} Not Allowed` });
+    
+    // Handle unsupported methods
+    else {
+      res.setHeader('Allow', ['GET', 'POST', 'OPTIONS']);
+      return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
+    }
+  } catch (error) {
+    console.error('Error in exercise handler:', error);
+    return res.status(500).json({ 
+      error: 'Internal server error',
+      message: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 } 
