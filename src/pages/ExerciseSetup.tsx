@@ -17,7 +17,7 @@ import { MuscleSelector } from '@/components/muscle-groups/MuscleSelector';
 
 interface SelectedMuscle {
   name: string;
-  effectiveness: 'low' | 'middle' | 'high';
+  effectiveness: 'low' | 'middle' | 'high' | 'primary';
 }
 
 interface Exercise {
@@ -150,22 +150,6 @@ export function ExerciseSetup() {
               onSelectedMusclesChange={handleSelectedMusclesChange}
             />
 
-            <div>
-              <Label htmlFor="difficulty">Difficulty</Label>
-              <Select
-                value={exercise.difficulty}
-                onValueChange={(value) => setExercise({ ...exercise, difficulty: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select difficulty" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="beginner">Beginner</SelectItem>
-                  <SelectItem value="intermediate">Intermediate</SelectItem>
-                  <SelectItem value="advanced">Advanced</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
 
             <div>
               <Label>Instructions</Label>

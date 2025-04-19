@@ -13,8 +13,16 @@ export const muscleGroups: MuscleGroup[] = [
     muscles: ["Upper Back", "Middle Back", "Lower Back", "Lats", "Traps"]
   },
   {
-    name: "Arms",
-    muscles: ["Biceps", "Triceps", "Forearms"]
+    name: "Biceps",
+    muscles: ["Long Head", "Short Head", "Brachialis"]
+  },
+  {
+    name: "Triceps", 
+    muscles: ["Long Head", "Lateral Head", "Medial Head"]
+  },
+  {
+    name: "Forearms",
+    muscles: ["Flexors", "Extensors", "Brachioradialis"]
   },
   {
     name: "Shoulders",
