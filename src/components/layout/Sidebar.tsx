@@ -6,7 +6,8 @@ import {
   Settings,
   BarChart,
   LogOut,
-  ListPlus
+  ListPlus,
+  ClipboardList
 } from 'lucide-react';
 import { FaTrophy, FaList, FaFire } from 'react-icons/fa';
 import { GiMuscleUp } from 'react-icons/gi';
@@ -23,6 +24,7 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
   const menuItems = [
     { icon: GiMuscleUp, label: 'Training Zones', path: '/training-zones' },
     { icon: Dumbbell, label: 'Exercises', path: '/exercises' },
+    { icon: ClipboardList, label: 'Log', path: '/log-history' },
     { icon: FaFire, label: 'Challenges', path: '/challenges' },
     { icon: Target, label: 'Goals', path: '/goals' },
     { icon: BarChart, label: 'Progress', path: '/progress' },

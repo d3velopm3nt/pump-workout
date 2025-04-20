@@ -7,6 +7,9 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ExerciseDetail } from './components/muscle-groups/ExerciseDetail';
 import { ExerciseLogPage } from './components/exercise-logging/ExerciseLogPage';
 import { ExerciseManagement } from './pages/ExerciseManagement';
+import { ExerciseLogHistory } from './pages/ExerciseLogHistory';
+import { ExerciseLogDetail } from './pages/ExerciseLogDetail';
+import { LogEntryDetail } from './pages/LogEntryDetail';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
@@ -59,6 +62,11 @@ function App() {
                     <Route path="/training-zones" element={<MuscleGroupNavigation />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/exercises/:id" element={<ExerciseDetails />} />
+                    
+                    {/* New Log History Routes */}
+                    <Route path="/log-history" element={<ExerciseLogHistory />} />
+                    <Route path="/log-history/:exerciseId" element={<ExerciseLogDetail />} />
+                    <Route path="/log-history/:exerciseId/:logId" element={<LogEntryDetail />} />
                   </Route>
 
                   {/* Redirect all other routes to landing */}
