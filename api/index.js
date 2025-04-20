@@ -1,21 +1,22 @@
 // Main API router for Vercel deployment
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import { URL } from 'url';
 
 // MongoDB connection
 const uri = process.env.MONGODB_URI || "mongodb+srv://admin:tools@cluster0.fmstbx8.mongodb.net/?retryWrites=true&w=majority";
+const dbName = process.env.MONGODB_DB || "pump";
 let cachedClient = null;
 let cachedDb = null;
 
 // Function to connect to MongoDB (with connection caching)
-export async function connectToDatabase() {
+async function connectToDatabase() {
   if (cachedClient && cachedDb) {
     return { client: cachedClient, db: cachedDb };
   }
 
   const client = new MongoClient(uri);
   await client.connect();
-  const db = client.db("pump");
+  const db = client.db(dbName);
   
   cachedClient = client;
   cachedDb = db;
@@ -103,7 +104,17 @@ async function createExerciseHandler(req, res) {
     const { db } = await connectToDatabase();
     const collection = db.collection('exercises');
     
-    const exercise = req.body;
+    let exercise;
+    try {
+      exercise = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    } catch (e) {
+      return res.status(400).json({ error: 'Invalid request body format' });
+    }
+
+    if (!exercise || !exercise.name) {
+      return res.status(400).json({ error: 'Exercise name is required' });
+    }
+    
     const newExercise = {
       ...exercise,
       createdAt: new Date(),
@@ -114,7 +125,7 @@ async function createExerciseHandler(req, res) {
     res.status(201).json({ ...newExercise, _id: result.insertedId });
   } catch (error) {
     console.error('Error creating exercise:', error);
-    res.status(500).json({ error: 'Failed to create exercise' });
+    res.status(500).json({ error: 'Failed to create exercise', details: error.message });
   }
 }
 
@@ -123,7 +134,6 @@ async function getExerciseByIdHandler(req, res, id) {
     const { db } = await connectToDatabase();
     const collection = db.collection('exercises');
     
-    const { ObjectId } = require('mongodb');
     const exercise = await collection.findOne({ _id: new ObjectId(id) });
     
     if (!exercise) {
@@ -142,7 +152,6 @@ async function updateExerciseHandler(req, res, id) {
     const { db } = await connectToDatabase();
     const collection = db.collection('exercises');
     
-    const { ObjectId } = require('mongodb');
     const exercise = req.body;
     
     const result = await collection.updateOne(
@@ -171,7 +180,6 @@ async function deleteExerciseHandler(req, res, id) {
     const { db } = await connectToDatabase();
     const collection = db.collection('exercises');
     
-    const { ObjectId } = require('mongodb');
     const result = await collection.deleteOne({ _id: new ObjectId(id) });
     
     if (result.deletedCount === 0) {

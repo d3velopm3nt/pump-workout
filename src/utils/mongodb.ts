@@ -72,20 +72,17 @@ export async function fetchFromApi<T = any>(endpoint: string, options: RequestIn
       },
     });
 
-    const contentType = response.headers.get('content-type');
-    let responseData: any;
-
-    if (contentType && contentType.includes('application/json')) {
-      responseData = await response.json();
-    } else {
-      responseData = await response.text();
-    }
-
     if (!response.ok) {
-      throw new Error(responseData.error || responseData.message || `API request failed: ${response.statusText}`);
+      const errorData = await response.json().catch(() => null);
+      throw new Error(errorData?.error || `API request failed: ${response.statusText}`);
     }
 
-    return responseData;
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return await response.json();
+    }
+    
+    return await response.text() as T;
   } catch (error) {
     console.error('API request failed:', error);
     throw error;
