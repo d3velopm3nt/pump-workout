@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Trophy,
   ArrowLeft,
@@ -13,6 +13,7 @@ import {
 import { GiWeightLiftingUp } from 'react-icons/gi';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
+import { getExerciseById } from '@/services/exerciseService';
 
 interface Set {
   weight: number;
@@ -23,10 +24,31 @@ export const ExerciseLogPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const decodedExerciseName = id ? decodeURIComponent(id) : '';
+  const [exercise, setExercise] = useState<any>(null);
   const [sets, setSets] = useState<Set[]>([{ weight: 0, reps: 0 }]);
   const [isSaving, setIsSaving] = useState(false);
-  
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchExercise = async () => {
+      if (!id) return;
+      try {
+        const data = await getExerciseById(id);
+        setExercise(data);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to fetch exercise details",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchExercise();
+  }, [id]);
+
   // Mock data for gamification elements
   const exerciseStats = {
     personalBest: 225,
@@ -85,7 +107,8 @@ export const ExerciseLogPage = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          exerciseName: decodedExerciseName,
+          exerciseId: id,
+          exerciseName: exercise?.name,
           date: new Date().toISOString(),
           sets: sets.map((set, index) => ({
             setNumber: index + 1,
@@ -131,7 +154,7 @@ export const ExerciseLogPage = () => {
             <div className="card-body">
               <div className="flex items-center gap-3 mb-6">
                 <GiWeightLiftingUp className="w-8 h-8 text-primary" />
-                <h1 className="text-2xl font-bold">Log {decodedExerciseName}</h1>
+                <h1 className="text-2xl font-bold">Log {exercise?.name}</h1>
               </div>
 
               {/* Sets logging */}

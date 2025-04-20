@@ -8,6 +8,10 @@ export async function createExercise(exercise: Omit<Exercise, '_id' | 'createdAt
   });
 }
 
+export async function getExerciseById(id: string) {
+  return fetchFromApi<Exercise>(`/exercises/${id}`);
+}
+
 export async function getExercises(filters?: {
   muscleGroup?: string;
   muscles?: string[];
@@ -38,10 +42,6 @@ export async function getExercises(filters?: {
   
   const query = queryParams.toString() ? `?${queryParams.toString()}` : '';
   return fetchFromApi<Exercise[]>(`/exercises${query}`);
-}
-
-export async function getExerciseById(id: string) {
-  return fetchFromApi<Exercise>(`/exercises/${id}`);
 }
 
 export async function updateExercise(id: string, exercise: Partial<Exercise>) {

@@ -1,137 +1,133 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-
-interface SelectedMuscle {
-  name: string;
-  effectiveness: 'low' | 'middle' | 'high' | 'primary';
-}
-
-interface Exercise {
-  _id: string;
-  name: string;
-  description: string;
-  muscles: SelectedMuscle[];
-  equipment: string[];
-  instructions: string[];
-  tips: string[];
-  commonMistakes: string[];
-}
+import { ArrowLeft } from 'lucide-react';
+import { getExerciseById } from '../services/exerciseService';
+import { GiMuscleUp } from 'react-icons/gi';
+import { Button } from '../components/ui/button';
 
 export function ExerciseDetails() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
 
-  const { data: exercise, isLoading } = useQuery<Exercise>({
+  const { data: exercise, isLoading, error } = useQuery({
     queryKey: ['exercise', id],
-    queryFn: async () => {
-      const response = await fetch(`/api/exercises/${id}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch exercise');
-      }
-      return response.json();
-    },
+    queryFn: () => getExerciseById(id!),
   });
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8">
-        <div className="animate-pulse">Loading...</div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
 
-  if (!exercise) {
+  if (error) {
     return (
-      <div className="container mx-auto py-8">
-        <div className="text-red-500">Exercise not found</div>
+      <div className="container mx-auto p-6">
+        <div className="rounded-lg border border-destructive bg-destructive/10 p-4">
+          <h2 className="text-lg font-semibold text-destructive">Error loading exercise</h2>
+          <p className="text-destructive">{(error as Error).message}</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>{exercise.name}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div>
-            <Label className="text-lg font-semibold">Description</Label>
-            <p className="mt-2 text-gray-700">{exercise.description}</p>
+    <div className="min-h-screen pt-16 bg-background">
+      <div className="container mx-auto py-8 px-4">
+        <Link to="/exercises" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
+          <ArrowLeft className="h-4 w-4" />
+          Back to Exercises
+        </Link>
+
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="flex items-center gap-3">
+            <div className="p-3 rounded-full bg-primary/10">
+              <GiMuscleUp className="w-8 h-8 text-primary" />
+            </div>
+            <h1 className="text-3xl font-bold">{exercise?.name}</h1>
           </div>
 
-          <div>
-            <Label className="text-lg font-semibold">Muscles</Label>
-            <div className="mt-2 border rounded-lg overflow-hidden">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-2 text-left">Muscle</th>
-                    <th className="px-4 py-2 text-left">Effectiveness</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {exercise.muscles.map((muscle) => (
-                    <tr key={muscle.name} className="border-t">
-                      <td className="px-4 py-2">{muscle.name}</td>
-                      <td className="px-4 py-2">
-                        <span className={`capitalize ${
-                          muscle.effectiveness === 'primary' ? 'text-green-600 font-semibold' :
-                          muscle.effectiveness === 'high' ? 'text-blue-600' :
-                          muscle.effectiveness === 'middle' ? 'text-yellow-600' :
-                          'text-gray-600'
-                        }`}>
-                          {muscle.effectiveness}
-                        </span>
-                      </td>
-                    </tr>
+          {/* Description */}
+          <div className="card bg-card">
+            <div className="card-body">
+              <h2 className="text-xl font-semibold mb-2">Description</h2>
+              <p className="text-muted-foreground">{exercise?.description}</p>
+            </div>
+          </div>
+
+          {/* Muscles & Equipment */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="card bg-card">
+              <div className="card-body">
+                <h2 className="text-xl font-semibold mb-4">Target Muscles</h2>
+                <ul className="space-y-2">
+                  {exercise?.muscles?.map((muscle) => (
+                    <li key={muscle.name} className="flex items-center justify-between">
+                      <span>{muscle.name}</span>
+                      <span className="badge">{muscle.effectiveness}</span>
+                    </li>
                   ))}
-                </tbody>
-              </table>
+                </ul>
+              </div>
+            </div>
+
+            <div className="card bg-card">
+              <div className="card-body">
+                <h2 className="text-xl font-semibold mb-4">Required Equipment</h2>
+                <ul className="space-y-2">
+                  {exercise?.equipment?.map((item) => (
+                    <li key={item} className="flex items-center gap-2">
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
 
-          <div>
-            <Label className="text-lg font-semibold">Equipment</Label>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {exercise.equipment.map((item) => (
-                <span key={item} className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-                  {item}
-                </span>
-              ))}
+          {/* Instructions */}
+          <div className="card bg-card">
+            <div className="card-body">
+              <h2 className="text-xl font-semibold mb-4">Instructions</h2>
+              <ol className="list-decimal list-inside space-y-2">
+                {exercise?.instructions?.map((instruction, index) => (
+                  <li key={index} className="text-muted-foreground">{instruction}</li>
+                ))}
+              </ol>
             </div>
           </div>
 
-          <div>
-            <Label className="text-lg font-semibold">Instructions</Label>
-            <ol className="mt-2 list-decimal list-inside space-y-2">
-              {exercise.instructions.map((instruction, index) => (
-                <li key={index} className="text-gray-700">{instruction}</li>
-              ))}
-            </ol>
-          </div>
+          {/* Tips */}
+          {exercise?.tips && exercise.tips.length > 0 && (
+            <div className="card bg-card">
+              <div className="card-body">
+                <h2 className="text-xl font-semibold mb-4">Tips</h2>
+                <ul className="list-disc list-inside space-y-2">
+                  {exercise.tips.map((tip, index) => (
+                    <li key={index} className="text-muted-foreground">{tip}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
 
-          <div>
-            <Label className="text-lg font-semibold">Tips</Label>
-            <ul className="mt-2 list-disc list-inside space-y-2">
-              {exercise.tips.map((tip, index) => (
-                <li key={index} className="text-gray-700">{tip}</li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <Label className="text-lg font-semibold">Common Mistakes</Label>
-            <ul className="mt-2 list-disc list-inside space-y-2">
-              {exercise.commonMistakes.map((mistake, index) => (
-                <li key={index} className="text-gray-700">{mistake}</li>
-              ))}
-            </ul>
-          </div>
-        </CardContent>
-      </Card>
+          {/* Common Mistakes */}
+          {exercise?.commonMistakes && exercise.commonMistakes.length > 0 && (
+            <div className="card bg-card">
+              <div className="card-body">
+                <h2 className="text-xl font-semibold mb-4">Common Mistakes</h2>
+                <ul className="list-disc list-inside space-y-2">
+                  {exercise.commonMistakes.map((mistake, index) => (
+                    <li key={index} className="text-muted-foreground">{mistake}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 } 

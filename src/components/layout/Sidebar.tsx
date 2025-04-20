@@ -23,7 +23,6 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
   const menuItems = [
     { icon: GiMuscleUp, label: 'Training Zones', path: '/training-zones' },
     { icon: Dumbbell, label: 'Exercises', path: '/exercises' },
-    { icon: ListPlus, label: 'Manage Exercises', path: '/exercise-management' },
     { icon: FaFire, label: 'Challenges', path: '/challenges' },
     { icon: Target, label: 'Goals', path: '/goals' },
     { icon: BarChart, label: 'Progress', path: '/progress' },

@@ -4,7 +4,6 @@ import { ClerkProvider } from '@clerk/clerk-react';
 import { ProtectedLayout } from './components/layout/ProtectedLayout';
 import { MuscleGroupNavigation } from './components/muscle-groups/MuscleGroupNavigation';
 import { AuthProvider } from './contexts/AuthContext';
-import { ExerciseList } from './components/muscle-groups/ExerciseList';
 import { ExerciseDetail } from './components/muscle-groups/ExerciseDetail';
 import { ExerciseLogPage } from './components/exercise-logging/ExerciseLogPage';
 import { ExerciseManagement } from './pages/ExerciseManagement';
@@ -49,10 +48,9 @@ function App() {
                   <Route element={<ProtectedLayout />}>
                     <Route path="/create-character" element={<CharacterCreation />} />
                     <Route path="/" element={<MuscleGroupNavigation />} />
-                    <Route path="/exercises" element={<ExerciseList />} />
                     <Route path="/exercise/:id" element={<ExerciseDetail />} />
                     <Route path="/log/:id" element={<ExerciseLogPage />} />
-                    <Route path="/exercise-management" element={<ExerciseManagement />} />
+                    <Route path="/exercises" element={<ExerciseManagement />} />
                     <Route path="/exercise-setup" element={<ExerciseSetup />} />
                     <Route path="/achievements" element={<Achievements />} />
                     <Route path="/leaderboard" element={<Leaderboard />} />

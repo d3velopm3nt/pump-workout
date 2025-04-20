@@ -19,6 +19,8 @@ import { Textarea } from '../components/ui/textarea';
 import { useAuthContext } from '../contexts/AuthContext';
 import { MuscleSelector } from '../components/muscle-groups/MuscleSelector';
 import { Link, useNavigate } from 'react-router-dom';
+import { FaDumbbell } from 'react-icons/fa';
+import { GiMuscleUp } from 'react-icons/gi';
 
 export function ExerciseManagement() {
   const queryClient = useQueryClient();
@@ -121,14 +123,19 @@ export function ExerciseManagement() {
 
   const handleLogClick = (exercise: Exercise, e: React.MouseEvent) => {
     e.preventDefault(); // Prevent navigation
-    navigate(`/log/${encodeURIComponent(exercise.name)}`);
+    if (exercise._id) {
+      navigate(`/log/${encodeURIComponent(exercise._id)}`);
+    }
   };
 
   return (
     <div className="min-h-screen pt-16 bg-background">
       <div className="container mx-auto py-8 px-4">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Exercise Management</h1>
+          <div className="flex items-center gap-3">
+            <GiMuscleUp className="w-8 h-8 text-primary" />
+            <h1 className="text-2xl font-bold">Exercise Management</h1>
+          </div>
           {!isEditing && user && (
             <Button onClick={() => setIsEditing(true)} variant="default">
               <Plus className="mr-2 h-4 w-4" />
@@ -255,72 +262,71 @@ export function ExerciseManagement() {
                 </form>
               </div>
             ) : (
-              <>
-                <div className="space-y-4">
-                  {exercises?.length > 0 ? (
-                    exercises.map((exercise) => (
+              <div className="space-y-4">
+                {exercises?.length > 0 ? (
+                  exercises.map((exercise) => (
+                    <div
+                      key={exercise._id}
+                      className="flex items-center justify-between p-4 bg-card hover:bg-accent/50 rounded-lg border transition-colors"
+                    >
                       <Link
-                        key={exercise._id}
                         to={`/exercises/${exercise._id}`}
-                        className="block border p-4 rounded-lg hover:border-primary transition-colors"
+                        className="flex items-center gap-3 flex-1"
                       >
-                        <div className="flex justify-between items-start">
-                          <div className="space-y-1">
-                            <h3 className="text-lg font-semibold group-hover:text-primary">
-                              {exercise.name}
-                            </h3>
-                            <p className="text-sm text-muted-foreground">{exercise.description}</p>
-                            <div className="text-sm">
-                              <p><strong>Muscles:</strong> {exercise.muscles?.map((m: SelectedMuscle) => `${m.name} (${m.effectiveness})`).join(', ') || 'None'}</p>
-                              <p><strong>Equipment:</strong> {exercise.equipment?.join(', ') || 'None'}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
+                        <div className="p-2 rounded-full bg-primary/10">
+                          <FaDumbbell className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">{exercise.name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {exercise.muscles?.map(m => m.name).join(', ') || 'No muscles specified'}
+                          </p>
+                        </div>
+                      </Link>
+                      
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => handleLogClick(exercise, e)}
+                          className="flex items-center gap-2"
+                        >
+                          <ClipboardList className="h-4 w-4" />
+                          Log
+                        </Button>
+                        {user && (
+                          <>
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={(e) => handleLogClick(exercise, e)}
-                              className="flex items-center gap-2"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleEdit(exercise);
+                              }}
                             >
-                              <ClipboardList className="h-4 w-4" />
-                              Log
+                              <Edit className="h-4 w-4" />
                             </Button>
-                            {user && (
-                              <>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    handleEdit(exercise);
-                                  }}
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    handleDelete(exercise._id!);
-                                  }}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </>
-                            )}
-                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                          </div>
-                        </div>
-                      </Link>
-                    ))
-                  ) : (
-                    <div className="text-center py-8">
-                      <p className="text-muted-foreground">No exercises found</p>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleDelete(exercise._id!);
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
                     </div>
-                  )}
-                </div>
-              </>
+                  ))
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">No exercises found</p>
+                  </div>
+                )}
+              </div>
             )}
           </>
         )}
