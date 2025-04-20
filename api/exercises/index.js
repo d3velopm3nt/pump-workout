@@ -45,7 +45,7 @@ export default async function handler(req, res) {
       
       const exercises = await collection.find(query).toArray();
       return res.status(200).json(exercises);
-    }
+  }
     
     // Handle POST request - create exercise
     else if (req.method === 'POST') {
