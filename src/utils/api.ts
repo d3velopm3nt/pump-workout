@@ -1,15 +1,4 @@
-// This file is for client-side imports and types only
-// MongoDB connections should be handled server-side
-
-// For TypeScript types only
-import type { Db } from 'mongodb';
-import { MongoClient } from 'mongodb';
-
-// Define an interface for database operations that will be implemented on the server
-export interface DatabaseConnection {
-  getCollection: (name: string) => any;
-  // Add other methods as needed
-}
+// API utilities and types
 
 // Define API response types
 export interface ApiResponse<T = any> {
@@ -19,38 +8,10 @@ export interface ApiResponse<T = any> {
   message?: string;
 }
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/pump-workout';
-const MONGODB_DB = process.env.MONGODB_DB || 'pump-workout';
-
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable');
-}
-
-if (!MONGODB_DB) {
-  throw new Error('Please define the MONGODB_DB environment variable');
-}
-
-let cachedClient: MongoClient | null = null;
-let cachedDb: any = null;
-
-export async function connectToDatabase() {
-  if (cachedClient && cachedDb) {
-    return { client: cachedClient, db: cachedDb };
-  }
-
-  const client = await MongoClient.connect(MONGODB_URI);
-  const db = client.db(MONGODB_DB);
-
-  cachedClient = client;
-  cachedDb = db;
-
-  return { client, db };
-}
-
 // Get the API URL based on environment
 const getApiUrl = () => {
   const isProduction = import.meta.env.PROD;
-  return isProduction ? '/api' : 'http://localhost:5173/api';
+  return isProduction ? '/api' : 'http://localhost:3001/api';
 };
 
 // Export the API endpoint for use in other files

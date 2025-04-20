@@ -1,4 +1,4 @@
-import { fetchFromApi } from '../utils/mongodb';
+import { fetchFromApi } from '../utils/api';
 import type { Exercise } from '../types/exercise';
 
 export async function createExercise(exercise: Omit<Exercise, '_id' | 'createdAt' | 'updatedAt'>) {

@@ -1,5 +1,5 @@
 import { MongoClient } from 'mongodb';
-import { connectToDatabase } from '../../src/utils/mongodb';
+import { connectToDatabase } from '../index.js';
 
 // Handler for /api/exercises endpoint
 export default async function handler(req, res) {
