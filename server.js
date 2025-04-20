@@ -5,6 +5,8 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import exercisesRouter from './api/exercises/index.js';
 import logsRouter from './api/logs/index.js';
+import { ObjectId } from 'mongodb';
+import { connectToDatabase } from './api/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -34,42 +36,148 @@ router.use((req, res, next) => {
 });
 
 // GET /api/exercises
-router.get('/', async (req, res) => {
-  console.log('GET all exercises');
-  return await apiHandler(req, res);
-});
-
-// POST /api/exercises
-router.post('/', async (req, res) => {
-  console.log('POST new exercise');
-  return await apiHandler(req, res);
+app.get('/api/exercises', async (req, res) => {
+  try {
+    const { db } = await connectToDatabase();
+    const collection = db.collection('exercises');
+    
+    const query = {};
+    const { muscleGroup, equipment, difficulty, search } = req.query;
+    
+    if (muscleGroup) {
+      query.muscleGroups = { $in: [muscleGroup] };
+    }
+    
+    if (equipment) {
+      query.equipment = { $in: [equipment] };
+    }
+    
+    if (difficulty) {
+      query.difficulty = difficulty;
+    }
+    
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    const exercises = await collection.find(query).toArray();
+    res.status(200).json(exercises);
+  } catch (error) {
+    console.error('Error getting exercises:', error);
+    res.status(500).json({ error: 'Failed to fetch exercises' });
+  }
 });
 
 // GET /api/exercises/:id
-router.get('/:id', async (req, res) => {
-  console.log('GET exercise by ID:', req.params.id);
-  return await apiHandler(req, res);
+app.get('/api/exercises/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'Invalid exercise ID' });
+    }
+
+    const { db } = await connectToDatabase();
+    const collection = db.collection('exercises');
+    const exercise = await collection.findOne({ _id: new ObjectId(id) });
+    
+    if (!exercise) {
+      return res.status(404).json({ error: 'Exercise not found' });
+    }
+    
+    res.status(200).json(exercise);
+  } catch (error) {
+    console.error('Error getting exercise:', error);
+    res.status(500).json({ error: 'Failed to fetch exercise' });
+  }
+});
+
+// POST /api/exercises
+app.post('/api/exercises', async (req, res) => {
+  try {
+    const { db } = await connectToDatabase();
+    const collection = db.collection('exercises');
+    
+    const exercise = req.body;
+    if (!exercise || !exercise.name) {
+      return res.status(400).json({ error: 'Exercise name is required' });
+    }
+    
+    const newExercise = {
+      ...exercise,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    const result = await collection.insertOne(newExercise);
+    res.status(201).json({ ...newExercise, _id: result.insertedId });
+  } catch (error) {
+    console.error('Error creating exercise:', error);
+    res.status(500).json({ error: 'Failed to create exercise' });
+  }
 });
 
 // PATCH /api/exercises/:id
-router.patch('/:id', async (req, res) => {
-  console.log('PATCH exercise:', req.params.id);
-  return await apiHandler(req, res);
+app.patch('/api/exercises/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'Invalid exercise ID' });
+    }
+
+    const { db } = await connectToDatabase();
+    const collection = db.collection('exercises');
+    
+    const updates = {
+      ...req.body,
+      updatedAt: new Date()
+    };
+    
+    const result = await collection.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: updates },
+      { returnDocument: 'after' }
+    );
+    
+    if (!result.value) {
+      return res.status(404).json({ error: 'Exercise not found' });
+    }
+    
+    res.status(200).json(result.value);
+  } catch (error) {
+    console.error('Error updating exercise:', error);
+    res.status(500).json({ error: 'Failed to update exercise' });
+  }
 });
 
 // DELETE /api/exercises/:id
-router.delete('/:id', async (req, res) => {
-  console.log('DELETE exercise:', req.params.id);
-  return await apiHandler(req, res);
-});
+app.delete('/api/exercises/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'Invalid exercise ID' });
+    }
 
-// Mount the router at /api/exercises
-app.use('/api/exercises', (req, res, next) => {
-  // Modify URL for API handler
-  req.url = req.url.replace(/^\/api\/exercises/, '');
-  console.log(`[${new Date().toISOString()}] ${req.method} /api/exercises${req.url}`);
-  next();
-}, exercisesRouter);
+    const { db } = await connectToDatabase();
+    const collection = db.collection('exercises');
+    
+    const result = await collection.findOneAndDelete({ _id: new ObjectId(id) });
+    
+    if (!result.value) {
+      return res.status(404).json({ error: 'Exercise not found' });
+    }
+    
+    res.status(200).json({ message: 'Exercise deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting exercise:', error);
+    res.status(500).json({ error: 'Failed to delete exercise' });
+  }
+});
 
 // Logs routes
 app.use('/api/logs', (req, res, next) => {
