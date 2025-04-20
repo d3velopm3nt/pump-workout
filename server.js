@@ -3,6 +3,8 @@ import cors from 'cors';
 import apiHandler from './api/index.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import exercisesRouter from './api/exercises.js';
+import logsRouter from './api/logs.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -62,7 +64,20 @@ router.delete('/:id', async (req, res) => {
 });
 
 // Mount the router at /api/exercises
-app.use('/api/exercises', router);
+app.use('/api/exercises', (req, res, next) => {
+  // Modify URL for API handler
+  req.url = req.url.replace(/^\/api\/exercises/, '');
+  console.log(`[${new Date().toISOString()}] ${req.method} /api/exercises${req.url}`);
+  next();
+}, exercisesRouter);
+
+// Logs routes
+app.use('/api/logs', (req, res, next) => {
+  // Modify URL for API handler
+  req.url = req.url.replace(/^\/api\/logs/, '');
+  console.log(`[${new Date().toISOString()}] ${req.method} /api/logs${req.url}`);
+  next();
+}, logsRouter);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

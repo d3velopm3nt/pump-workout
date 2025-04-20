@@ -1,8 +1,10 @@
 import { useLocation, Link } from 'react-router-dom';
+import { useState } from 'react';
 import { getMuscles } from '../../config/exercises';
-import { ChevronRight, Trophy,  Clock } from 'lucide-react';
+import { ChevronRight, Trophy, Clock, ClipboardList } from 'lucide-react';
 import { GiMuscleUp, GiWeightLiftingUp } from 'react-icons/gi';
-import { FaDumbbell,  FaBolt } from 'react-icons/fa';
+import { FaDumbbell, FaBolt } from 'react-icons/fa';
+import { Button } from '@/components/ui/button';
 
 export const ExerciseList = () => {
   const location = useLocation();
@@ -90,9 +92,8 @@ export const ExerciseList = () => {
                 {muscle.exercises.map((exercise: string) => {
                   const stats = getExerciseStats(exercise);
                   return (
-                    <Link
+                    <div
                       key={exercise}
-                      to={`/exercise/${encodeURIComponent(exercise)}`}
                       className="block bg-base-300 rounded-lg p-4 hover:bg-base-100 transition-all hover:shadow-lg"
                     >
                       <div className="flex items-start justify-between">
@@ -125,12 +126,22 @@ export const ExerciseList = () => {
                         </div>
                       </div>
 
-                      <div className="flex justify-end mt-2">
-                        <span className="text-primary text-sm flex items-center gap-1">
+                      <div className="flex justify-between mt-4">
+                        <Link
+                          to={`/log/${encodeURIComponent(exercise)}`}
+                          className="btn btn-outline btn-sm flex items-center gap-2"
+                        >
+                          <ClipboardList className="h-4 w-4" />
+                          Log Exercise
+                        </Link>
+                        <Link
+                          to={`/exercise/${encodeURIComponent(exercise)}`}
+                          className="text-primary text-sm flex items-center gap-1"
+                        >
                           Start Exercise <ChevronRight className="h-4 w-4" />
-                        </span>
+                        </Link>
                       </div>
-                    </Link>
+                    </div>
                   );
                 })}
               </div>

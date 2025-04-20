@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Edit, Trash2, Search, Filter, ChevronRight } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Filter, ChevronRight, ClipboardList } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -23,6 +23,7 @@ import { Link, useNavigate } from 'react-router-dom';
 export function ExerciseManagement() {
   const queryClient = useQueryClient();
   const { user } = useAuthContext();
+  const navigate = useNavigate();
   const [selectedMuscles, setSelectedMuscles] = useState<SelectedMuscle[]>([]);
   const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(false);
@@ -116,6 +117,11 @@ export function ExerciseManagement() {
     if (window.confirm('Are you sure you want to delete this exercise?')) {
       deleteExerciseMutation(id);
     }
+  };
+
+  const handleLogClick = (exercise: Exercise, e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent navigation
+    navigate(`/log/${encodeURIComponent(exercise.name)}`);
   };
 
   return (
@@ -250,15 +256,6 @@ export function ExerciseManagement() {
               </div>
             ) : (
               <>
-                <div className="mb-4">
-                  <Input
-                    placeholder="Search exercises..."
-                    value={searchTerm}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-                    className="max-w-md"
-                  />
-                </div>
-
                 <div className="space-y-4">
                   {exercises?.length > 0 ? (
                     exercises.map((exercise) => (
@@ -278,7 +275,16 @@ export function ExerciseManagement() {
                               <p><strong>Equipment:</strong> {exercise.equipment?.join(', ') || 'None'}</p>
                             </div>
                           </div>
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={(e) => handleLogClick(exercise, e)}
+                              className="flex items-center gap-2"
+                            >
+                              <ClipboardList className="h-4 w-4" />
+                              Log
+                            </Button>
                             {user && (
                               <>
                                 <Button

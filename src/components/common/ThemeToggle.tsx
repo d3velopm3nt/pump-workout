@@ -1,7 +1,7 @@
 import { Sun, Moon } from 'lucide-react';
 
 export const ThemeToggle = () => {1
-    debugger
+    
   const toggleTheme = () => {
     const html = document.querySelector('html');
     const currentTheme = html?.getAttribute('data-theme');
