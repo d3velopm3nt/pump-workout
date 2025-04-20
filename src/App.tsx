@@ -19,6 +19,7 @@ import CharacterCreation from './pages/CharacterCreation';
 import { ExerciseSetup } from './pages/ExerciseSetup';
 import { Toaster } from './components/ui/toaster';
 import { ThemeProvider } from './components/theme-provider';
+import { ExerciseDetails } from './pages/ExerciseDetails';
 
 const queryClient = new QueryClient();
 
@@ -57,6 +58,7 @@ function App() {
                     <Route path="/goals" element={<Goals />} />
                     <Route path="/training-zones" element={<MuscleGroupNavigation />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/exercises/:id" element={<ExerciseDetails />} />
                   </Route>
 
                   {/* Redirect all other routes to landing */}

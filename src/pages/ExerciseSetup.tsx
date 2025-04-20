@@ -47,19 +47,25 @@ export function ExerciseSetup() {
 
   const createExerciseMutation = useMutation({
     mutationFn: async (newExercise: Exercise) => {
-      const response = await fetch('/api/exercises', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newExercise),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to create exercise');
+      try {
+        const response = await fetch('http://localhost:5173/api/exercises', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newExercise),
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => null);
+          throw new Error(errorData?.message || `Failed to create exercise: ${response.statusText}`);
+        }
+        
+        return response.json();
+      } catch (error) {
+        console.error('Error details:', error);
+        throw error;
       }
-      
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['exercises'] });
@@ -79,10 +85,11 @@ export function ExerciseSetup() {
         commonMistakes: [''],
       });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
+      console.error('Mutation error:', error);
       toast({
         title: 'Error',
-        description: 'Failed to create exercise',
+        description: error.message || 'Failed to create exercise',
         variant: 'destructive',
       });
     },

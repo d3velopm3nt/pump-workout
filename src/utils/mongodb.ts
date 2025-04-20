@@ -3,6 +3,7 @@
 
 // For TypeScript types only
 import type { Db } from 'mongodb';
+import { MongoClient } from 'mongodb';
 
 // Define an interface for database operations that will be implemented on the server
 export interface DatabaseConnection {
@@ -18,14 +19,38 @@ export interface ApiResponse<T = any> {
   message?: string;
 }
 
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/pump-workout';
+const MONGODB_DB = process.env.MONGODB_DB || 'pump-workout';
+
+if (!MONGODB_URI) {
+  throw new Error('Please define the MONGODB_URI environment variable');
+}
+
+if (!MONGODB_DB) {
+  throw new Error('Please define the MONGODB_DB environment variable');
+}
+
+let cachedClient: MongoClient | null = null;
+let cachedDb: any = null;
+
+export async function connectToDatabase() {
+  if (cachedClient && cachedDb) {
+    return { client: cachedClient, db: cachedDb };
+  }
+
+  const client = await MongoClient.connect(MONGODB_URI);
+  const db = client.db(MONGODB_DB);
+
+  cachedClient = client;
+  cachedDb = db;
+
+  return { client, db };
+}
+
 // Get the API URL based on environment
 const getApiUrl = () => {
-  // Check if we're in production (Vercel deployment)
   const isProduction = import.meta.env.PROD;
-  
-  // Use relative URL in production (where frontend and API are on same domain)
-  // In development, you might need to point to a separate backend server
-  return isProduction ? '/api' : '/api';
+  return isProduction ? '/api' : 'http://localhost:5173/api';
 };
 
 // Export the API endpoint for use in other files
@@ -36,8 +61,6 @@ export async function fetchFromApi<T = any>(endpoint: string, options: RequestIn
   const defaultHeaders = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'Cache-Control': 'no-cache, no-store, must-revalidate',
-    'Pragma': 'no-cache',
   };
 
   try {
@@ -47,8 +70,6 @@ export async function fetchFromApi<T = any>(endpoint: string, options: RequestIn
         ...defaultHeaders,
         ...options.headers,
       },
-      // Add cache: 'no-store' to force fresh data
-      cache: 'no-store',
     });
 
     const contentType = response.headers.get('content-type');
@@ -57,25 +78,14 @@ export async function fetchFromApi<T = any>(endpoint: string, options: RequestIn
     if (contentType && contentType.includes('application/json')) {
       responseData = await response.json();
     } else {
-      const text = await response.text();
-      responseData = {
-        success: response.ok,
-        data: text,
-        message: response.ok ? 'Success' : 'Error',
-      };
+      responseData = await response.text();
     }
 
     if (!response.ok) {
       throw new Error(responseData.error || responseData.message || `API request failed: ${response.statusText}`);
     }
 
-    // If the response is in our ApiResponse format
-    if (typeof responseData === 'object' && 'success' in responseData) {
-      return responseData.data as T;
-    }
-
-    // If the response is a direct array or object, return it as is
-    return responseData as T;
+    return responseData;
   } catch (error) {
     console.error('API request failed:', error);
     throw error;

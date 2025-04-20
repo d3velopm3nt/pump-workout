@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Edit, Trash2, Search, Filter } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Filter, ChevronRight } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -18,6 +18,7 @@ import { createExercise, getExercises, updateExercise, deleteExercise } from '..
 import { Textarea } from '../components/ui/textarea';
 import { useAuthContext } from '../contexts/AuthContext';
 import { MuscleSelector } from '../components/muscle-groups/MuscleSelector';
+import { Link, useNavigate } from 'react-router-dom';
 
 export function ExerciseManagement() {
   const queryClient = useQueryClient();
@@ -257,39 +258,53 @@ export function ExerciseManagement() {
               placeholder="Search exercises..."
               value={searchTerm}
               onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+              className="max-w-md"
             />
           </div>
 
           <div className="space-y-4">
             {exercises?.map((exercise) => (
-              <div key={exercise._id} className="border p-4 rounded-lg">
+              <Link
+                key={exercise._id}
+                to={`/exercises/${exercise._id}`}
+                className="block border p-4 rounded-lg hover:border-primary transition-colors"
+              >
                 <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-lg font-semibold">{exercise.name}</h3>
+                  <div className="space-y-1">
+                    <h3 className="text-lg font-semibold group-hover:text-primary">
+                      {exercise.name}
+                    </h3>
                     <p className="text-sm text-muted-foreground">{exercise.description}</p>
                     <div className="text-sm">
                       <p><strong>Muscles:</strong> {exercise.muscles?.map((m: SelectedMuscle) => `${m.name} (${m.effectiveness})`).join(', ') || 'None'}</p>
                       <p><strong>Equipment:</strong> {exercise.equipment?.join(', ') || 'None'}</p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleEdit(exercise)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleEdit(exercise);
+                      }}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleDelete(exercise._id!)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleDelete(exercise._id!);
+                      }}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </>

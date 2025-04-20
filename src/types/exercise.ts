@@ -9,9 +9,12 @@ export interface Exercise {
   description: string;
   muscles: SelectedMuscle[];
   equipment: string[];
+  difficulty?: string;
   instructions: string[];
   tips: string[];
   commonMistakes: string[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface MuscleGroup {
