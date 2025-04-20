@@ -1,6 +1,5 @@
 // Main API router for Vercel deployment
 import { MongoClient, ObjectId } from 'mongodb';
-import { URL } from 'url';
 
 // MongoDB connection
 const uri = process.env.MONGODB_URI || "mongodb+srv://admin:tools@cluster0.fmstbx8.mongodb.net/?retryWrites=true&w=majority";
@@ -14,6 +13,7 @@ async function connectToDatabase() {
     return { client: cachedClient, db: cachedDb };
   }
 
+  console.log('Connecting to MongoDB...');
   const client = new MongoClient(uri);
   await client.connect();
   const db = client.db(dbName);
@@ -21,13 +21,20 @@ async function connectToDatabase() {
   cachedClient = client;
   cachedDb = db;
   
+  console.log('Connected to MongoDB successfully');
   return { client, db };
 }
 
 // Main handler for all API requests
 export default async function handler(req, res) {
-  const url = new URL(req.url, `http://${req.headers.host}`);
-  const pathname = url.pathname;
+  console.log('API Handler received request:', {
+    method: req.method,
+    url: req.url,
+    path: req.path,
+    params: req.params,
+    query: req.query,
+    body: req.body
+  });
 
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -41,30 +48,46 @@ export default async function handler(req, res) {
     return;
   }
 
-  // Route to appropriate handler based on pathname
-  if (pathname.startsWith('/api/exercises')) {
-    if (pathname === '/api/exercises' && req.method === 'GET') {
+  try {
+    // Handle GET /api/exercises
+    if (req.method === 'GET' && !req.params.id) {
       return await getExercisesHandler(req, res);
-    } else if (pathname === '/api/exercises' && req.method === 'POST') {
-      return await createExerciseHandler(req, res);
-    } else if (pathname.match(/^\/api\/exercises\/[a-zA-Z0-9]+$/) && req.method === 'GET') {
-      const id = pathname.split('/').pop();
-      return await getExerciseByIdHandler(req, res, id);
-    } else if (pathname.match(/^\/api\/exercises\/[a-zA-Z0-9]+$/) && req.method === 'PATCH') {
-      const id = pathname.split('/').pop();
-      return await updateExerciseHandler(req, res, id);
-    } else if (pathname.match(/^\/api\/exercises\/[a-zA-Z0-9]+$/) && req.method === 'DELETE') {
-      const id = pathname.split('/').pop();
-      return await deleteExerciseHandler(req, res, id);
     }
-  }
+    
+    // Handle POST /api/exercises
+    if (req.method === 'POST' && !req.params.id) {
+      return await createExerciseHandler(req, res);
+    }
+    
+    // Handle routes with ID parameter
+    if (req.params.id) {
+      const id = req.params.id;
+      
+      if (req.method === 'GET') {
+        return await getExerciseByIdHandler(req, res, id);
+      }
+      
+      if (req.method === 'PATCH') {
+        return await updateExerciseHandler(req, res, id);
+      }
+      
+      if (req.method === 'DELETE') {
+        return await deleteExerciseHandler(req, res, id);
+      }
+    }
 
-  // Handle 404 for all other routes
-  res.status(404).json({ error: 'Not Found' });
+    // If no route matches
+    console.log('No matching route found');
+    return res.status(404).json({ error: 'Not Found' });
+  } catch (error) {
+    console.error('Error in handler:', error);
+    return res.status(500).json({ error: 'Internal Server Error', message: error.message });
+  }
 }
 
 // Handler functions for each API endpoint
 async function getExercisesHandler(req, res) {
+  console.log('Handling GET exercises request');
   try {
     const { db } = await connectToDatabase();
     const collection = db.collection('exercises');
@@ -91,11 +114,14 @@ async function getExercisesHandler(req, res) {
       ];
     }
     
+    console.log('Executing MongoDB query:', query);
     const exercises = await collection.find(query).toArray();
-    res.status(200).json(exercises);
+    console.log(`Found ${exercises.length} exercises`);
+    
+    return res.status(200).json(exercises);
   } catch (error) {
     console.error('Error getting exercises:', error);
-    res.status(500).json({ error: 'Failed to fetch exercises' });
+    return res.status(500).json({ error: 'Failed to fetch exercises' });
   }
 }
 
