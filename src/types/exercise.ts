@@ -4,15 +4,16 @@ export interface SelectedMuscle {
 }
 
 export interface Exercise {
-  _id?: string;
+  id: string;
   name: string;
-  description: string;
-  muscles: SelectedMuscle[];
-  equipment: string[];
-  difficulty?: string;
+  targetMuscles: string[];
+  description?: string;
+  category?: string;
+  equipment?: string[];
   instructions: string[];
-  tips: string[];
-  commonMistakes: string[];
+  tips?: string[];
+  commonMistakes?: string[];
+  difficulty?: string;
   createdAt?: string;
   updatedAt?: string;
 }

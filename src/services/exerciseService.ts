@@ -1,18 +1,18 @@
 import { fetchFromApi } from '../utils/api';
 import type { Exercise } from '../types/exercise';
 
-export async function createExercise(exercise: Omit<Exercise, '_id' | 'createdAt' | 'updatedAt'>) {
+async function createExercise(exercise: Omit<Exercise, '_id' | 'createdAt' | 'updatedAt'>) {
   return fetchFromApi<Exercise>('/exercises', {
     method: 'POST',
     body: JSON.stringify(exercise),
   });
 }
 
-export async function getExerciseById(id: string) {
+async function getExerciseById(id: string) {
   return fetchFromApi<Exercise>(`/exercises/${id}`);
 }
 
-export async function getExercises(filters?: {
+async function getExercises(filters?: {
   muscleGroup?: string;
   muscles?: string[];
   equipment?: string[];
@@ -44,15 +44,32 @@ export async function getExercises(filters?: {
   return fetchFromApi<Exercise[]>(`/exercises${query}`);
 }
 
-export async function updateExercise(id: string, exercise: Partial<Exercise>) {
+async function updateExercise(id: string, exercise: Partial<Exercise>) {
   return fetchFromApi<Exercise>(`/exercises/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(exercise),
   });
 }
 
-export async function deleteExercise(id: string) {
+async function deleteExercise(id: string) {
   return fetchFromApi(`/exercises/${id}`, {
     method: 'DELETE',
   });
-} 
+}
+
+export const exerciseService = {
+  createExercise,
+  getExerciseById,
+  getExercises,
+  updateExercise,
+  deleteExercise,
+};
+
+// Also export individual functions for components that use them directly
+export {
+  createExercise,
+  getExerciseById,
+  getExercises,
+  updateExercise,
+  deleteExercise,
+}; 
