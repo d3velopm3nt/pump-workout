@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { 
   Trophy,
@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { GiWeightLiftingUp } from 'react-icons/gi';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/use-toast';
 
 interface Set {
   weight: number;
@@ -20,8 +21,11 @@ interface Set {
 
 export const ExerciseLogPage = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const decodedExerciseName = id ? decodeURIComponent(id) : '';
   const [sets, setSets] = useState<Set[]>([{ weight: 0, reps: 0 }]);
+  const [isSaving, setIsSaving] = useState(false);
   
   // Mock data for gamification elements
   const exerciseStats = {
@@ -53,7 +57,64 @@ export const ExerciseLogPage = () => {
   };
 
   const removeSet = (index: number) => {
+    // Don't allow removing if it's the last set
+    if (sets.length <= 1) return;
     setSets(sets.filter((_, i) => i !== index));
+  };
+
+  const handleSave = async () => {
+    // Validate sets
+    const invalidSets = sets.filter(set => {
+      return !set.weight || !set.reps || set.weight <= 0 || set.reps <= 0;
+    });
+
+    if (invalidSets.length > 0) {
+      toast({
+        title: "Invalid sets",
+        description: "Please fill in all fields with values greater than 0",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const response = await fetch('/api/logs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          exerciseName: decodedExerciseName,
+          date: new Date().toISOString(),
+          sets: sets.map((set, index) => ({
+            setNumber: index + 1,
+            weight: set.weight,
+            reps: set.reps
+          }))
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save workout');
+      }
+
+      toast({
+        title: "Success",
+        description: "Workout logged successfully!",
+      });
+
+      // Navigate back to the exercise page
+      navigate(-1);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to save workout",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -101,14 +162,16 @@ export const ExerciseLogPage = () => {
                           />
                         </div>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeSet(index)}
-                        className="text-error"
-                      >
-                        Remove
-                      </Button>
+                      {sets.length > 1 && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeSet(index)}
+                          className="text-error"
+                        >
+                          Remove
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -119,8 +182,12 @@ export const ExerciseLogPage = () => {
               </div>
 
               <div className="mt-6">
-                <Button className="w-full btn-primary">
-                  Complete Workout
+                <Button 
+                  onClick={handleSave} 
+                  className="w-full btn-primary"
+                  disabled={isSaving}
+                >
+                  {isSaving ? "Saving..." : "Log Workout"}
                 </Button>
               </div>
             </div>

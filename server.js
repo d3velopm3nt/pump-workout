@@ -3,8 +3,8 @@ import cors from 'cors';
 import apiHandler from './api/index.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import exercisesRouter from './api/exercises.js';
-import logsRouter from './api/logs.js';
+import exercisesRouter from './api/exercises/index.js';
+import logsRouter from './api/logs/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

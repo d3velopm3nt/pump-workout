@@ -8,7 +8,7 @@ let cachedClient = null;
 let cachedDb = null;
 
 // Function to connect to MongoDB (with connection caching)
-async function connectToDatabase() {
+export async function connectToDatabase() {
   if (cachedClient && cachedDb) {
     return { client: cachedClient, db: cachedDb };
   }
