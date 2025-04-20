@@ -28,6 +28,26 @@ export const ExerciseLogPage = () => {
   const [sets, setSets] = useState<Set[]>([{ weight: 0, reps: 0 }]);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  // Update date every day
+  useEffect(() => {
+    const updateDate = () => {
+      setCurrentDate(new Date());
+    };
+    
+    // Update at midnight
+    const now = new Date();
+    const msUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() - now.getTime();
+    
+    const timer = setTimeout(() => {
+      updateDate();
+      // Set interval to update every 24 hours
+      setInterval(updateDate, 24 * 60 * 60 * 1000);
+    }, msUntilMidnight);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const fetchExercise = async () => {
@@ -109,7 +129,7 @@ export const ExerciseLogPage = () => {
         body: JSON.stringify({
           exerciseId: id,
           exerciseName: exercise?.name,
-          date: new Date().toISOString(),
+          date: currentDate.toISOString(),
           sets: sets.map((set, index) => ({
             setNumber: index + 1,
             weight: set.weight,
@@ -142,10 +162,20 @@ export const ExerciseLogPage = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <Link to=".." className="btn btn-ghost gap-2 mb-6">
-        <ArrowLeft className="h-4 w-4" />
-        Back to exercise
-      </Link>
+      <div className="flex justify-between items-center mb-6">
+        <Link to=".." className="btn btn-ghost gap-2">
+          <ArrowLeft className="h-4 w-4" />
+          Back to exercise
+        </Link>
+        <div className="text-lg font-semibold">
+          {currentDate.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          })}
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main logging section */}
