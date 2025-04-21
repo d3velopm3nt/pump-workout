@@ -16,7 +16,7 @@ import { muscleGroups, equipment } from '../types/muscles';
 import { Exercise, SelectedMuscle } from '../types/exercise';
 import { createExercise, getExercises, updateExercise, deleteExercise } from '../services/exerciseService';
 import { Textarea } from '../components/ui/textarea';
-import { useAuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { MuscleSelector } from '../components/muscle-groups/MuscleSelector';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaDumbbell } from 'react-icons/fa';
@@ -24,7 +24,7 @@ import { GiMuscleUp } from 'react-icons/gi';
 
 export function ExerciseManagement() {
   const queryClient = useQueryClient();
-  const { user } = useAuthContext();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [selectedMuscles, setSelectedMuscles] = useState<SelectedMuscle[]>([]);
   const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useAuthContext } from './AuthContext';
+import { useAuth } from './AuthContext';
 import { INITIAL_ACHIEVEMENTS } from '../config/achievements';
 
 interface Badge {
@@ -37,7 +37,7 @@ interface GamificationContextType {
 const GamificationContext = createContext<GamificationContextType | undefined>(undefined);
 
 export function GamificationProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuthContext();
+  const { user } = useAuth();
   const [userProgress, setUserProgress] = useState<UserProgress>({
     level: 1,
     experience: 0,

@@ -1,4 +1,4 @@
-import { useAuthContext } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { ThemeToggle } from '../common/ThemeToggle';
 import { FaFire } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
@@ -8,7 +8,7 @@ interface NavbarProps {
 }
 
 export const Navbar = ({ onMenuClick }: NavbarProps) => {
-  const { user, logout } = useAuthContext();
+  const { user, logout } = useAuth();
   
   return (
     <nav className="navbar fixed top-0 left-0 right-0 z-50 bg-base-100/95 backdrop-blur-sm border-b border-base-200">

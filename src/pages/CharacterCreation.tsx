@@ -50,7 +50,7 @@ const characterClasses: CharacterClass[] = [
   }
 ];
 
-const CharacterCreation: React.FC = () => {
+export const CharacterCreation: React.FC = () => {
   const navigate = useNavigate();
   const [selectedClass, setSelectedClass] = useState<string>('');
   const [characterName, setCharacterName] = useState('');

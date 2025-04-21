@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Loader2, Calendar, Search, Filter, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useAuth } from '@/contexts/AuthContext'; // Make sure this path is correct
 
 interface LogSet {
   setNumber: number;
@@ -25,35 +27,28 @@ interface Log {
 }
 
 export const ExerciseLogHistory = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [logs, setLogs] = useState<Log[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedLog, setSelectedLog] = useState<Log | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedExercise, setSelectedExercise] = useState<string>('all');
   const [dateRange, setDateRange] = useState<string>('all');
 
   useEffect(() => {
     const fetchLogs = async () => {
+      if (!user) return;
+      
       try {
         setIsLoading(true);
-        const response = await fetch('/api/logs');
+        const response = await fetch(`/api/logs?userId=${user.id}`);
         if (!response.ok) {
           throw new Error('Failed to fetch logs');
         }
         const data = await response.json();
-        // Validate and transform the data
-        const validLogs = Array.isArray(data) ? data.filter((log): log is Log => {
-          return log && 
-            typeof log._id === 'string' &&
-            typeof log.exerciseName === 'string' &&
-            typeof log.date === 'string' &&
-            Array.isArray(log.sets);
-        }) : [];
-        
         // Sort logs by date in descending order
-        const sortedLogs = validLogs.sort((a, b) => 
+        const sortedLogs = data.sort((a: Log, b: Log) => 
           new Date(b.date).getTime() - new Date(a.date).getTime()
         );
         setLogs(sortedLogs);
@@ -67,23 +62,17 @@ export const ExerciseLogHistory = () => {
     };
 
     fetchLogs();
-  }, []);
+  }, [user]);
 
   const uniqueExercises = useMemo(() => {
-    const exercises = new Set(logs.map(log => log.exerciseName).filter(Boolean));
+    const exercises = new Set(logs.map(log => log.exerciseName));
     return Array.from(exercises);
   }, [logs]);
 
   const filteredLogs = useMemo(() => {
     return logs.filter(log => {
-      if (!log.exerciseName) return false;
-      
-      const matchesSearch = searchQuery ? 
-        log.exerciseName.toLowerCase().includes(searchQuery.toLowerCase()) : 
-        true;
-      
-      const matchesExercise = selectedExercise === 'all' || 
-        log.exerciseName === selectedExercise;
+      const matchesSearch = log.exerciseName.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesExercise = selectedExercise === 'all' || log.exerciseName === selectedExercise;
       
       if (dateRange === 'all') return matchesSearch && matchesExercise;
       
@@ -100,8 +89,7 @@ export const ExerciseLogHistory = () => {
   }, [logs, searchQuery, selectedExercise, dateRange]);
 
   const handleLogClick = (log: Log) => {
-    setSelectedLog(log);
-    setIsModalOpen(true);
+    navigate(`/logs/${log._id}`);
   };
 
   if (isLoading) {
@@ -214,8 +202,13 @@ export const ExerciseLogHistory = () => {
                     })}
                   </p>
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  {log.sets.length} {log.sets.length === 1 ? 'set' : 'sets'}
+                <div className="flex flex-col items-end">
+                  <div className="text-sm text-muted-foreground">
+                    {log.sets.length} {log.sets.length === 1 ? 'set' : 'sets'}
+                  </div>
+                  <div className="text-sm font-medium">
+                    {log.sets.reduce((acc, set) => acc + (set.weight * set.reps), 0).toLocaleString()} lbs total
+                  </div>
                 </div>
               </div>
             </div>

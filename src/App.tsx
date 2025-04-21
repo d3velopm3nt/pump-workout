@@ -1,28 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ClerkProvider } from '@clerk/clerk-react';
-import { ProtectedLayout } from './components/layout/ProtectedLayout';
-import { MuscleGroupNavigation } from './components/muscle-groups/MuscleGroupNavigation';
-import { AuthProvider } from './contexts/AuthContext';
-import { ExerciseDetail } from './components/muscle-groups/ExerciseDetail';
-import { ExerciseLogPage } from './components/exercise-logging/ExerciseLogPage';
-import { ExerciseManagement } from './pages/ExerciseManagement';
-import { ExerciseLogHistory } from './pages/ExerciseLogHistory';
-import { ExerciseLogDetail } from './pages/ExerciseLogDetail';
-import { LogEntryDetail } from './pages/LogEntryDetail';
-import LandingPage from './pages/LandingPage';
-import Login from './pages/Login';
-import SignUp from './pages/SignUp';
-import { Leaderboard } from './components/gamification/Leaderboard';
-import { Achievements } from './components/gamification/Achievements';
-import { Challenges } from './components/gamification/Challenges';
-import { Goals } from './components/gamification/Goals';
-import { Profile } from './components/profile/Profile';
-import CharacterCreation from './pages/CharacterCreation';
-import { ExerciseSetup } from './pages/ExerciseSetup';
-import { Toaster } from './components/ui/toaster';
 import { ThemeProvider } from './components/theme-provider';
-import { ExerciseDetails } from './pages/ExerciseDetails';
+import { AuthProvider } from './contexts/AuthContext';
+import { AppRoutes } from './routes';
+import { Toaster } from './components/ui/toaster';
 
 const queryClient = new QueryClient();
 
@@ -35,50 +17,18 @@ if (!clerkPubKey) {
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
-      <div className="min-h-screen bg-background text-foreground">
-        <ClerkProvider publishableKey={clerkPubKey}>
-          <QueryClientProvider client={queryClient}>
-            <BrowserRouter>
-              <AuthProvider>
-                <Routes>
-                  {/* Public routes - accessible without authentication */}
-                  <Route path="/landing" element={<LandingPage />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<SignUp />} />
-                  
-                  {/* Protected routes - require authentication */}
-                  <Route element={<ProtectedLayout />}>
-                    <Route path="/create-character" element={<CharacterCreation />} />
-                    <Route path="/" element={<MuscleGroupNavigation />} />
-                    <Route path="/exercise/:id" element={<ExerciseDetail />} />
-                    <Route path="/log/:id" element={<ExerciseLogPage />} />
-                    <Route path="/exercises" element={<ExerciseManagement />} />
-                    <Route path="/exercise-setup" element={<ExerciseSetup />} />
-                    <Route path="/achievements" element={<Achievements />} />
-                    <Route path="/leaderboard" element={<Leaderboard />} />
-                    <Route path="/challenges" element={<Challenges />} />
-                    <Route path="/goals" element={<Goals />} />
-                    <Route path="/training-zones" element={<MuscleGroupNavigation />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/exercises/:id" element={<ExerciseDetails />} />
-                    
-                    {/* New Log History Routes */}
-                    <Route path="/log-history" element={<ExerciseLogHistory />} />
-                    <Route path="/log-history/:exerciseId" element={<ExerciseLogDetail />} />
-                    <Route path="/log-history/:exerciseId/:logId" element={<LogEntryDetail />} />
-                  </Route>
-
-                  {/* Redirect all other routes to landing */}
-                  <Route path="*" element={<Navigate to="/landing" replace />} />
-                </Routes>
-                <Toaster />
-              </AuthProvider>
-            </BrowserRouter>
-          </QueryClientProvider>
-        </ClerkProvider>
-      </div>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ClerkProvider publishableKey={clerkPubKey}>
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+          <Router>
+            <AuthProvider>
+              <AppRoutes />
+              <Toaster />
+            </AuthProvider>
+          </Router>
+        </ThemeProvider>
+      </ClerkProvider>
+    </QueryClientProvider>
   );
 }
 

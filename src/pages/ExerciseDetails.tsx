@@ -39,7 +39,7 @@ export function ExerciseDetails() {
     queryFn: async () => {
       if (!id) throw new Error('Exercise ID is required');
       const data = await getExerciseById(id);
-      return data as Exercise;
+      return data as unknown as Exercise;
     },
     enabled: !!id,
   });

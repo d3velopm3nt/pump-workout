@@ -14,7 +14,7 @@ import { GiWeightLiftingUp } from 'react-icons/gi';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { getExerciseById } from '@/services/exerciseService';
-import { useAuthContext } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Set {
   weight: number;
@@ -25,7 +25,7 @@ export const ExerciseLogPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user } = useAuthContext();
+  const { user } = useAuth();
   const [exercise, setExercise] = useState<any>(null);
   const [sets, setSets] = useState<Set[]>([{ weight: 0, reps: 0 }]);
   const [isSaving, setIsSaving] = useState(false);

@@ -4,7 +4,7 @@ import { FaFire } from 'react-icons/fa';
 import { GiTrophy, GiLevelThree, GiPodiumWinner } from 'react-icons/gi';
 import { FaUserFriends, FaDumbbell, FaChartLine } from 'react-icons/fa';
 
-const LandingPage = () => {
+export const LandingPage = () => {
   return (
     <div className="min-h-screen bg-base-100">
       {/* Navbar */}

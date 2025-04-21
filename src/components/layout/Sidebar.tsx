@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { FaTrophy, FaList, FaFire } from 'react-icons/fa';
 import { GiMuscleUp } from 'react-icons/gi';
-import { useAuthContext } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface SidebarProps {
   onClose: () => void;
@@ -19,7 +19,7 @@ interface SidebarProps {
 
 export const Sidebar = ({ onClose }: SidebarProps) => {
   const location = useLocation();
-  const { logout } = useAuthContext();
+  const { logout } = useAuth();
   
   const menuItems = [
     { icon: GiMuscleUp, label: 'Training Zones', path: '/training-zones' },
