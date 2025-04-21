@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trophy, Dumbbell, Calendar } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from '../components/ui/button';
 
 interface LogSet {
   setNumber: number;
@@ -13,9 +13,11 @@ interface Log {
   _id: string;
   exerciseId: string;
   exerciseName: string;
-  userId: string;
   date: string;
+  userId: string;
   sets: LogSet[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export const LogDetail = () => {
@@ -27,18 +29,39 @@ export const LogDetail = () => {
 
   useEffect(() => {
     const fetchLogDetail = async () => {
+      if (!logId) {
+        setError('No log ID provided');
+        setIsLoading(false);
+        return;
+      }
+
       try {
         setIsLoading(true);
         const response = await fetch(`/api/logs/${logId}`);
+        
         if (!response.ok) {
-          throw new Error('Failed to fetch log details');
+          throw new Error(`Failed to fetch log details: ${response.status}`);
         }
+
         const data = await response.json();
-        setLog(data);
+        
+        // The API returns an array with a single log object
+        if (!Array.isArray(data) || data.length === 0) {
+          throw new Error('Invalid response format: expected an array with a log object');
+        }
+
+        const logData = data[0]; // Get the first (and should be only) log object
+
+        if (!logData || !logData.sets || !Array.isArray(logData.sets)) {
+          throw new Error('Invalid log data format: missing or invalid sets array');
+        }
+
+        setLog(logData);
         setError(null);
       } catch (error) {
-        setError('Failed to load log details. Please try again later.');
-        console.error('Error fetching log details:', error);
+        console.error('Error fetching log:', error);
+        setError(error instanceof Error ? error.message : 'Failed to load log details');
+        setLog(null);
       } finally {
         setIsLoading(false);
       }
@@ -49,8 +72,18 @@ export const LogDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+      <div className="container mx-auto p-4">
+        <Button
+          variant="ghost"
+          className="mb-6 -ml-2 text-muted-foreground"
+          onClick={() => navigate(-1)}
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to History
+        </Button>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+        </div>
       </div>
     );
   }
@@ -58,6 +91,14 @@ export const LogDetail = () => {
   if (error || !log) {
     return (
       <div className="container mx-auto p-4">
+        <Button
+          variant="ghost"
+          className="mb-6 -ml-2 text-muted-foreground"
+          onClick={() => navigate(-1)}
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to History
+        </Button>
         <div className="bg-destructive/10 text-destructive p-4 rounded-lg">
           {error || 'Log not found'}
         </div>
@@ -65,15 +106,8 @@ export const LogDetail = () => {
     );
   }
 
-  // Calculate total volume (weight * reps for all sets)
-  const totalVolume = log.sets.reduce((acc, set) => acc + (set.weight * set.reps), 0);
-  // Calculate max weight
-  const maxWeight = Math.max(...log.sets.map(set => set.weight));
-  // Calculate total reps
-  const totalReps = log.sets.reduce((acc, set) => acc + set.reps, 0);
-
   return (
-    <div className="container mx-auto p-4 max-w-2xl">
+    <div className="container mx-auto p-4">
       <Button
         variant="ghost"
         className="mb-6 -ml-2 text-muted-foreground"
@@ -83,71 +117,38 @@ export const LogDetail = () => {
         Back to History
       </Button>
 
-      <div className="space-y-6">
-        {/* Header Section */}
-        <div className="bg-card rounded-lg p-6 border border-border">
-          <h1 className="text-2xl font-bold mb-2">{log.exerciseName}</h1>
-          <div className="flex items-center text-muted-foreground">
-            <Calendar className="h-4 w-4 mr-2" />
-            {new Date(log.date).toLocaleDateString('en-US', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}
-          </div>
+      <div className="space-y-4">
+        {/* Exercise Name and Date */}
+        <div className="bg-card p-4 rounded-lg border border-border">
+          <h1 className="text-xl font-semibold">{log.exerciseName}</h1>
+          <p className="text-muted-foreground mt-1">
+            {new Date(log.date).toLocaleDateString()}
+          </p>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-card rounded-lg p-4 border border-border">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-muted-foreground">Total Volume</h3>
-              <Trophy className="h-4 w-4 text-primary" />
-            </div>
-            <p className="text-2xl font-bold mt-2">{totalVolume.toLocaleString()} lbs</p>
+        {/* Sets */}
+        <div className="bg-card rounded-lg border border-border">
+          <div className="p-4 border-b border-border">
+            <h2 className="font-semibold">Sets</h2>
           </div>
-
-          <div className="bg-card rounded-lg p-4 border border-border">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-muted-foreground">Max Weight</h3>
-              <Dumbbell className="h-4 w-4 text-primary" />
-            </div>
-            <p className="text-2xl font-bold mt-2">{maxWeight} lbs</p>
-          </div>
-
-          <div className="bg-card rounded-lg p-4 border border-border">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-muted-foreground">Total Reps</h3>
-              <Trophy className="h-4 w-4 text-primary" />
-            </div>
-            <p className="text-2xl font-bold mt-2">{totalReps}</p>
-          </div>
-        </div>
-
-        {/* Sets Table */}
-        <div className="bg-card rounded-lg border border-border overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left p-4 text-muted-foreground font-medium">Set</th>
-                  <th className="text-left p-4 text-muted-foreground font-medium">Weight (lbs)</th>
-                  <th className="text-left p-4 text-muted-foreground font-medium">Reps</th>
-                  <th className="text-left p-4 text-muted-foreground font-medium">Volume</th>
-                </tr>
-              </thead>
-              <tbody>
-                {log.sets.map((set) => (
-                  <tr key={set.setNumber} className="border-b border-border last:border-0">
-                    <td className="p-4">{set.setNumber}</td>
-                    <td className="p-4">{set.weight}</td>
-                    <td className="p-4">{set.reps}</td>
-                    <td className="p-4">{set.weight * set.reps}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="divide-y divide-border">
+            {log.sets.map((set) => (
+              <div key={set.setNumber} className="p-4 flex justify-between items-center">
+                <div>
+                  <span className="text-muted-foreground">Set {set.setNumber}</span>
+                </div>
+                <div className="flex gap-8">
+                  <div>
+                    <span className="text-muted-foreground mr-2">Weight:</span>
+                    <span className="font-medium">{set.weight} lbs</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground mr-2">Reps:</span>
+                    <span className="font-medium">{set.reps}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
