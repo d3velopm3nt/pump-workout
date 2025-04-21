@@ -14,6 +14,7 @@ import { GiWeightLiftingUp } from 'react-icons/gi';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { getExerciseById } from '@/services/exerciseService';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 interface Set {
   weight: number;
@@ -24,6 +25,7 @@ export const ExerciseLogPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuthContext();
   const [exercise, setExercise] = useState<any>(null);
   const [sets, setSets] = useState<Set[]>([{ weight: 0, reps: 0 }]);
   const [isSaving, setIsSaving] = useState(false);
@@ -119,6 +121,15 @@ export const ExerciseLogPage = () => {
       return;
     }
 
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to save a workout",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsSaving(true);
     try {
       const response = await fetch('/api/logs', {
@@ -130,6 +141,7 @@ export const ExerciseLogPage = () => {
           exerciseId: id,
           exerciseName: exercise?.name,
           date: currentDate.toISOString(),
+          userId: user.id,
           sets: sets.map((set, index) => ({
             setNumber: index + 1,
             weight: set.weight,
