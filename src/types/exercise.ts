@@ -4,7 +4,7 @@ export interface SelectedMuscle {
 }
 
 export interface Exercise {
-  id: string;
+  _id: string;
   name: string;
   targetMuscles: string[];
   description?: string;

@@ -1,31 +1,53 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Exercise } from '../types/exercise';
-import { exerciseService } from '../services/exerciseService';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Calendar } from 'lucide-react';
+interface LogSet {
+  setNumber: number;
+  weight: number;
+  reps: number;
+}
+
+interface Log {
+  _id: string;
+  exerciseId: string;
+  exerciseName: string;
+  userId: string;
+  date: string;
+  sets: LogSet[];
+}
 
 export const ExerciseLogHistory = () => {
-  const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [logs, setLogs] = useState<Log[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedLog, setSelectedLog] = useState<Log | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    const fetchExercises = async () => {
+    const fetchLogs = async () => {
       try {
         setIsLoading(true);
-        const data = await exerciseService.getExercises();
-        setExercises(data);
+        const response = await fetch('/api/logs');
+        if (!response.ok) {
+          throw new Error('Failed to fetch logs');
+        }
+        const data = await response.json();
+        setLogs(data);
         setError(null);
       } catch (error) {
-        setError('Failed to load exercises. Please try again later.');
-        console.error('Error fetching exercises:', error);
+        setError('Failed to load exercise logs. Please try again later.');
+        console.error('Error fetching logs:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchExercises();
+    fetchLogs();
   }, []);
+
+  const handleLogClick = (log: Log) => {
+    setSelectedLog(log);
+    setIsModalOpen(true);
+  };
 
   if (isLoading) {
     return (
@@ -48,30 +70,38 @@ export const ExerciseLogHistory = () => {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-6">Exercise Log History</h1>
-      {exercises.length === 0 ? (
+      {logs.length === 0 ? (
         <div className="text-center text-muted-foreground">
-          No exercises found. Start by adding some exercises to your workout routine.
+          No exercise logs found. Start by logging some exercises!
         </div>
       ) : (
         <div className="grid gap-4">
-          {exercises.map((exercise) => (
-            <Link
-              key={exercise.id}
-              to={`/log-history/${exercise.id}`}
-              className="block p-4 rounded-lg bg-card hover:bg-card/90 transition-colors border border-border"
+          {logs.map((log) => (
+            <div
+              key={log._id}
+              onClick={() => handleLogClick(log)}
+              className="block p-4 rounded-lg bg-card hover:bg-card/90 transition-colors border border-border cursor-pointer"
             >
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <span className="text-primary text-xl">💪</span>
+                  <Calendar className="h-5 w-5 text-primary" />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-lg">{exercise.name}</h3>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg">{log.exerciseName}</h3>
                   <p className="text-sm text-muted-foreground">
-                    {exercise.targetMuscles.join(', ')}
+                    {new Date(log.date).toLocaleDateString('en-US', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
                   </p>
                 </div>
+                <div className="text-sm text-muted-foreground">
+                  {log.sets.length} {log.sets.length === 1 ? 'set' : 'sets'}
+                </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}
